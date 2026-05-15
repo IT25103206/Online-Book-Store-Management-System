@@ -25,5 +25,15 @@ public class UserController {
         }
         return ResponseEntity.status(401).build();
     }
+
+    @GetMapping
+    public List<UserDTO> getAll() {
+        return userService.getAllUsers();
+    }
+
+    @PostMapping("/Add")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.createUser(userDTO));
+    }
     
 }
