@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Collection | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 4rem;
+            padding-top: 4rem;
+        }
+        .cart-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+        .cart-item:hover {
+            border-color: var(--primary);
+        }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .item-thumb {
+            width: 80px;
+            height: 110px;
+            background: #1a1f2e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+            opacity: 0.8;
+        }
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+        }
+        .qty-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:hover { color: var(--primary); }
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 5rem 0;
+        }
+        .empty-cart i {
+            font-size: 5rem;
+            color: var(--border);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">Lumina Books</a>
+        <ul class="nav-links">
+            <li><a href="browse.html">Browse</a></li>
+            <li><a href="browse.html?cat=Bestsellers">Bestsellers</a></li>
+            <li><a href="browse.html?cat=New Arrivals">New Arrivals</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="cart.html" style="color:white; position:relative;">
+                <i class="fas fa-shopping-cart" style="font-size:1.2rem;"></i>
+                <span id="cartCount" style="position:absolute;top:-8px;right:-8px;background:var(--primary);color:white;font-size:0.6rem;font-weight:900;padding:2px 6px;border-radius:10px;display:none;"></span>
+            </a>
+            <div id="authActions" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="login.html" class="btn btn-primary" id="loginBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="margin-top: 4rem;">
+            <h1 style="font-size: 3.5rem; margin-bottom: 0.5rem;">Your Collection</h1>
+            <p>Review the cosmic knowledge you've selected for your journey.</p>
+        </header>
+
+        <div id="cartContent">
+            <!-- Loaded by JS -->
+            <div style="text-align: center; padding: 5rem;">
+                <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary);"></i>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" style="margin-top: 10rem;">
+        <div class="footer-grid">
+            <div><h2 class="nav-logo" style="font-size:1.5rem;margin-bottom:1rem;">Lumina Books</h2><p>Curating the cosmos of literature.</p></div>
+            <div class="footer-links"><h4>Library</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Library Policy</a></li></ul></div>
+            <div class="footer-links"><h4>Support</h4><ul><li><a href="#">Shipping</a></li><li><a href="#">Terms</a></li></ul></div>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script>
+        const user = session.get();
+        if (user) {
+            const authActions = document.getElementById('authActions');
+            authActions.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <a href="${(user.userType === 'ADMIN' || user.isadmin === 1) ? 'admin-dashboard.html' : 'user-dashboard.html'}" style="color: white; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 0.8rem;">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=8b5cf6&color=fff&bold=true" style="width: 32px; height: 32px; border-radius: 50%;">
+                        <span>${user.name.split(' ')[0]}</span>
+                    </a>
+                    <button onclick="session.clear(); location.reload();" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Logout</button>
+                </div>
+            `;
+        }
+        const cartData = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+        if (cartData.length > 0) {
+            const count = document.getElementById('cartCount');
+            count.textContent = cartData.length;
+            count.style.display = 'block';
+        }
+
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+            const container = document.getElementById('cartContent');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h2>Your collection is empty</h2>
+                        <p style="margin-bottom: 2.5rem;">Explore the archives to find your next favorite artifact.</p>
+                        <a href="browse.html" class="btn btn-primary">Browse Archives</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let subtotal = 0;
+            const itemsHtml = cart.map((item, index) => {
+                const price = parseFloat(item.price);
+                const total = price * (item.qty || 1);
+                subtotal += total;
+                return `
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <div class="item-thumb">
+                                <i class="fas ${item.bookType === 'EBOOK' ? 'fa-tablet-alt' : 'fa-book'}"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">${item.name}</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">${item.bookType || 'Printed Edition'}</p>
+                                <span style="color: var(--accent); font-size: 0.8rem; font-weight: 800;">SYNC_READY</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 3rem;">
+                            <div class="qty-control">
+                                <button class="qty-btn" onclick="updateQty(${index}, -1)">−</button>
+                                <span style="font-weight: 800; min-width: 20px; text-align: center;">${item.qty || 1}</span>
+                                <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            </div>
+                            <p style="font-size: 1.5rem; font-weight: 800; min-width: 120px;">$${total.toFixed(2)}</p>
+                            <i class="far fa-trash-alt" style="color: var(--text-muted); cursor: pointer; font-size: 1.2rem;" onclick="removeItem(${index})"></i>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const tax = subtotal * 0.08;
+            const finalTotal = subtotal + tax;
+
+            container.innerHTML = `
+                <div class="cart-layout">
+                    <main>${itemsHtml}</main>
+                    <aside>
+                        <div class="summary-card">
+                            <h3 style="margin-bottom: 2rem;">Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Subtotal</span>
+                                <span>$${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span style="color: var(--accent);">Free</span>
+                            </div>
+                            <div class="summary-row" style="margin-bottom: 2.5rem;">
+                                <span>Tax (8%)</span>
+                                <span>$${tax.toFixed(2)}</span>
+                            </div>
+                            <div class="summary-row" style="border-top: 1px solid var(--border); padding-top: 2rem; margin-bottom: 3rem;">
+                                <span style="font-size: 1.5rem; font-weight: 800;">Total</span>
+                                <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">$${finalTotal.toFixed(2)}</span>
+                            </div>
+                            <a href="checkout.html" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1.2rem; border-radius: var(--radius-md);">Proceed to Checkout</a>
+                            <p style="text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-lock"></i> Secure Encryption Enabled</p>
+                        </div>
+                    </aside>
+                </div>
+            `;
+        }
+
+        window.updateQty = (index, delta) => {
+            const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+            cart[index].qty = Math.max(1, (cart[index].qty || 1) + delta);
+            localStorage.setItem('lumina_cart', JSON.stringify(cart));
+            renderCart();
+        };
+
+        window.removeItem = (index) => {
+            const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+            cart.splice(index, 1);
+            localStorage.setItem('lumina_cart', JSON.stringify(cart));
+            renderCart();
+        };
+
+        renderCart();
+    </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Books | Discover Your Next Favorite Book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #05070a;
+            --bg-card: #0f121a;
+            --bg-frame: #080a0f;
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --secondary: #f59e0b;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.05);
+            --grad-purple: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: var(--bg-deep); 
+            color: var(--text-main); 
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: white; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .logo i { color: var(--primary); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a:hover { color: white; }
+        .nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+        .search-bar { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border); 
+            padding: 0.5rem 1rem; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+            width: 250px;
+        }
+        .search-bar input { background: none; border: none; color: white; font-size: 0.8rem; width: 100%; outline: none; }
+        .btn-login { background: var(--grad-purple); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary-glow); }
+
+        /* Hero */
+        .hero { 
+            padding: 8rem 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 4rem;
+            position: relative;
+        }
+        .hero-content { max-width: 600px; }
+        .hero-label { color: var(--secondary); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; display: block; }
+        .hero h1 { font-size: 4rem; font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -2px; }
+        .hero h1 span { color: var(--primary); font-style: italic; }
+        .hero p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2.5rem; max-width: 500px; }
+        .hero-btns { display: flex; gap: 1.5rem; }
+        .btn { padding: 1rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; transition: 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary); color: white; border: none; }
+        .btn-outline { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); }
+        .btn:hover { transform: translateY(-3px); }
+
+        .hero-img { position: relative; width: 500px; height: 500px; }
+        .floating-cover { 
+            position: absolute; 
+            width: 280px; 
+            border-radius: 12px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transition: 0.5s;
+        }
+        .cover-1 { top: 0; right: 0; z-index: 3; transform: rotate(5deg); }
+        .cover-2 { top: 40px; right: 80px; z-index: 2; transform: rotate(-5deg); opacity: 0.8; }
+        .cover-3 { top: 100px; right: 160px; z-index: 1; transform: rotate(-15deg); opacity: 0.5; }
+
+        /* Section Titles */
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+        .section-header h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .section-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Categories Grid */
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 8rem; }
+        .cat-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            padding: 2.5rem 1.5rem; 
+            border-radius: 16px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .cat-card i { font-size: 2rem; color: var(--primary); margin-bottom: 1.5rem; display: block; opacity: 0.7; }
+        .cat-card span { font-weight: 700; font-size: 0.95rem; }
+        .cat-card:hover { transform: translateY(-10px); border-color: var(--primary); }
+
+        /* Bestsellers Grid */
+        .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 8rem; }
+
+        /* Promo Banner */
+        .promo-banner { 
+            background: var(--grad-purple); 
+            border-radius: 24px; 
+            padding: 5rem; 
+            margin-bottom: 8rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: relative; 
+            overflow: hidden;
+        }
+        .promo-content { max-width: 500px; z-index: 2; }
+        .promo-banner h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 1.5rem; }
+
+        /* Reader Reflections (New Layout)        /* Animations & Hover Effects */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .floating-cover { animation: float 6s ease-in-out infinite; }
+        .cover-2 { animation-delay: 1s; }
+        .cover-3 { animation-delay: 2s; }
+
+        .cat-card, .book-card, .testi-card {
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .cat-card:hover, .book-card:hover, .testi-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px var(--primary-glow);
+        }
+
+        section { opacity: 0; transform: translateY(30px); transition: 1s ease-out; }
+        section.reveal { opacity: 1; transform: translateY(0); }
+
+        .testi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .reflection-actions {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .testi-card:hover .reflection-actions { opacity: 1; }
+        .action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.del:hover { color: #ef4444; } p { font-size: 1.1rem; color: #e2e8f0; margin-bottom: 2rem; line-height: 1.7; }
+        .testi-card .quote-icon { font-size: 2rem; color: var(--primary); opacity: 0.3; margin-bottom: 1.5rem; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-info img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .user-info h5 { font-weight: 700; font-size: 1rem; }
+        .user-info span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .join-card { 
+            background: rgba(139, 92, 246, 0.05); 
+            border: 1px dashed var(--primary); 
+            padding: 2.5rem; 
+            border-radius: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            gap: 1rem;
+        }
+        .join-card h4 { font-size: 1.4rem; font-weight: 800; }
+        .join-card p { color: var(--text-muted); font-size: 0.9rem; }
+        .avatar-group { display: flex; align-items: center; }
+        .avatar-group img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--bg-deep); margin-right: -10px; }
+        .avatar-count { width: 35px; height: 35px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 800; border: 2px solid var(--bg-deep); }
+
+        /* Newsletter */
+        .join-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+            border: 2px dashed var(--border);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .join-card h4 { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; }
+        .join-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+        .avatars { display: flex; justify-content: center; align-items: center; }
+        .avatars img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--bg-deep); margin-left: -10px; }
+        .more-avatars { background: var(--primary); color: white; font-size: 0.6rem; font-weight: 800; padding: 4px 8px; border-radius: 50px; margin-left: 5px; }
+
+        .newsletter { padding: 8rem 0; text-align: center; background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%); }
+        .newsletter h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+        .newsletter p { color: var(--text-muted); margin-bottom: 3rem; }
+        .news-form { display: flex; max-width: 500px; margin: 0 auto; gap: 1rem; }
+        .news-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border); padding: 1rem 1.5rem; border-radius: 12px; color: white; outline: none; }
+        .news-btn { background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+        /* Modal */
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: var(--bg-card); padding: 3rem; border-radius: 24px; width: 500px; border: 1px solid var(--border); }
+        .m-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 1rem; border-radius: 12px; color: white; margin-bottom: 1.5rem; outline: none; }
+        
+        footer { padding: 4rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <a href="index.html" class="logo"><i class="fas fa-book-sparkles"></i> Lumina Books</a>
+            <ul class="nav-links">
+                <li><a href="browse.html">Browse</a></li>
+                <li><a href="bestsellers.html">Bestsellers</a></li>
+                <li><a href="new-arrivals.html">New Arrivals</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="search-bar">
+                    <i class="fas fa-search" style="font-size:0.8rem; opacity:0.5;"></i>
+                    <input type="text" placeholder="Search the cosmos...">
+                </div>
+                <button class="btn-login" id="loginBtn" onclick="location.href='login.html'">Login</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <span class="hero-label">Curation for the Curious</span>
+                <h1>Discover Your <span>Next Favorite</span> Book</h1>
+                <p>Explore an expertly curated collection of literature within a sanctuary designed for digital readers.</p>
+                <div class="hero-btns">
+                    <a href="browse.html" class="btn btn-primary">Explore Catalog</a>
+                    <button class="btn btn-outline" onclick="openReviewModal()">Leave a Reflection</button>
+                </div>
+            </div>
+            <div class="hero-img">
+                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=600" class="floating-cover cover-1" alt="Book 1">
+                <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=600" class="floating-cover cover-2" alt="Book 2">
+                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=600" class="floating-cover cover-3" alt="Book 3">
+            </div>
+        </section>
+
+        <!-- Featured Categories -->
+        <section id="categories">
+            <div class="section-header">
+                <div>
+                    <h2>Featured Categories</h2>
+                    <p>Traverse through diverse worlds of knowledge</p>
+                </div>
+            </div>
+            <div class="cat-grid" id="categoryGrid"></div>
+        </section>
+
+        <!-- Monthly Bestsellers -->
+        <section id="bestsellers">
+            <div class="section-header">
+                <div>
+                    <h2>Monthly Bestsellers</h2>
+                    <p>Artifacts currently dominating the celestial charts</p>
+                </div>
+            </div>
+            <div class="quick-grid" id="bestsellerGrid"></div>
+        </section>
+
+        <!-- Reader Reflections -->
+        <section class="testi-section" id="reflections">
+            <div class="section-header" style="justify-content: space-between; align-items: flex-end; margin-bottom: 4rem;">
+                <div>
+                    <h2 style="font-size: 2.5rem;">Reader Reflections</h2>
+                    <p>Voices from our cosmic community</p>
+                </div>
+                <div class="join-card">
+                    <h4>Join 50k+ Readers</h4>
+                    <p>Become part of our global community and get exclusive early access to new collections.</p>
+                    <div class="avatar-group">
+                        <img src="https://i.pravatar.cc/100?u=1" alt="u1">
+                        <img src="https://i.pravatar.cc/100?u=2" alt="u2">
+                        <img src="https://i.pravatar.cc/100?u=3" alt="u3">
+                        <div class="avatar-count">+49k</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter">
+            <h2>Stay Enlightened</h2>
+            <p>Subscribe to our weekly cosmic dispatch for literary reviews.</p>
+            <form class="news-form">
+                <input type="email" class="news-input" placeholder="Enter your email address">
+                <button type="submit" class="news-btn">Subscribe</button>
+            </form>
+        </section>
+
+        <footer>
+            &copy; 2026 Lumina Books Artifacts. All Rights Reserved.
+        </footer>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal-bg" id="reviewModal">
+        <div class="modal-box">
+            <h3 style="margin-bottom: 2rem;">Leave a Reflection</h3>
+            <form id="reflectionForm">
+                <textarea class="m-input" name="comment" rows="4" placeholder="Share your literary wisdom..." required></textarea>
+                <div style="display:flex; gap:1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Submit Reflection</button>
+                    <button type="button" class="btn btn-outline" onclick="closeReviewModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Inline session management to avoid 404
+        const session = {
+            get: () => {
+                const u = localStorage.getItem('lumina_user');
+                return u ? JSON.parse(u) : null;
+            }
+        };
+
+        const catGrid = document.getElementById('categoryGrid');
+        const bestGrid = document.getElementById('bestsellerGrid');
+        const ICONS = ['fa-book-journal-whills', 'fa-atom', 'fa-brain', 'fa-scroll', 'fa-compass'];
+        let allCats = [];
+
+        function renderBookCard(book) {
+            const imgUrl = api.getImageUrl(book.imagePath);
+            const categoryName = allCats.find(c => c.id === book.categoryId)?.name || 'GENERAL';
+            return `
+            <div class="book-card" onclick="if(!event.target.closest('button')) location.href='book-detail.html?id=${book.id}'" style="background: #0f121a; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer;">
+                <div style="background: #080a0f; height: 300px; display: flex; align-items: center; justify-content: center; padding: 2.5rem; position: relative;">
+                    <img src="${imgUrl}" style="height: 100%; width: auto; max-width: 100%; border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); object-fit: contain;" onerror="this.src='https://placehold.co/200x300/1a1f2e/ffffff?text=No+Cover'">
+                </div>
+                <div style="padding: 1.2rem;">
+                    <span style="color: #f59e0b; font-size: 0.6rem; font-weight: 800; text-transform: uppercase;">${categoryName}</span>
+                    <h4 style="font-weight: 700; font-size: 0.95rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0.4rem 0;">${book.name}</h4>
+                    <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.8rem;">By ${book.authorName || 'Lumina Archives'}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 800; color: #94a3b8; font-size: 0.9rem;">$${book.price}</span>
+                        <button onclick="addToCart(${book.id})" style="background:var(--primary); color:white; border:none; width:35px; height:35px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s;">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function addToCart(bookId) {
+            api.getBooks().then(books => {
+                const book = books.find(b => b.id === bookId);
+                if (!book) return;
+                const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+                const existing = cart.find(item => item.id === bookId);
+                if (existing) {
+                    existing.qty = (existing.qty || 1) + 1;
+                } else {
+                    cart.push({ ...book, qty: 1 });
+                }
+                localStorage.setItem('lumina_cart', JSON.stringify(cart));
+                alert(`${book.name} added to your cosmic collection!`);
+                location.href = 'cart.html';
+            });
+        }
+
+        // --- READER REFLECTIONS CRUD ---
+        async function loadReflections() {
+            try {
+                const reviews = await api.getReviews();
+                const grid = document.getElementById('testiGrid');
+                if(!grid) return;
+                
+                const displayedReviews = reviews.slice(0, 3);
+                let html = displayedReviews.map(r => `
+                    <div class="testi-card">
+                        <div class="reflection-actions">
+                            <button class="action-btn" onclick="editReflection(${r.id}, '${r.userName}', '${r.userRole}', '${r.comment.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn del" onclick="deleteReflection(${r.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <i class="fas fa-quote-left" style="color:var(--primary); opacity:0.3; font-size:1.5rem; margin-bottom:1.5rem; display:block;"></i>
+                        <p>"${r.comment}"</p>
+                        <div class="user-info">
+                            <div style="background:var(--primary); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;">
+                                ${r.userName ? r.userName.substring(0,2).toUpperCase() : 'U'}
+                            </div>
+                            <div>
+                                <h4 style="margin:0; font-size:0.9rem;">${r.userName}</h4>
+                                <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">${r.userRole}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                html += `
+                    <div class="join-card">
+                        <h4>Join 50k+ Readers</h4>
+                        <p>Become part of our global community and get exclusive early access to new collections.</p>
+                        <div class="avatars">
+                            <img src="https://i.pravatar.cc/150?u=1" alt="U1">
+                            <img src="https://i.pravatar.cc/150?u=2" alt="U2">
+                            <img src="https://i.pravatar.cc/150?u=3" alt="U3">
+                            <div class="more-avatars">+49k</div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML = html;
+            } catch (e) { console.error('Failed to load reviews', e); }
+        }
+
+        function showReflectionModal(id = '', name = '', role = '', comment = '') {
+            document.getElementById('refId').value = id;
+            document.getElementById('refUserName').value = name;
+            document.getElementById('refUserRole').value = role;
+            document.getElementById('refComment').value = comment;
+            document.getElementById('refModalTitle').textContent = id ? 'Revise Your Reflection' : 'Share Your Journey';
+            document.getElementById('reflectionModal').style.display = 'flex';
+        }
+
+        function closeRefModal() {
+            document.getElementById('reflectionModal').style.display = 'none';
+        }
+
+        document.getElementById('reflectionForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('refId').value;
+            const data = {
+                id: id ? parseInt(id) : null,
+                userName: document.getElementById('refUserName').value,
+                userRole: document.getElementById('refUserRole').value,
+                comment: document.getElementById('refComment').value,
+                rating: 5,
+                bookId: 1 // Default to general feedback
+            };
+
+            try {
+                await api.createReview(data); // In this API, Add handles both new and existing if ID provided
+                closeRefModal();
+                loadReflections();
+            } catch (err) { alert('Action failed: ' + err.message); }
+        };
+
+        async function deleteReflection(id) {
+            if (!confirm('Are you sure you want to remove this reflection?')) return;
+            try {
+                await api.deleteReview(id);
+                loadReflections();
+            } catch (err) { alert('Deletion failed'); }
+        }
+
+        function editReflection(id, name, role, comment) {
+            showReflectionModal(id, name, role, comment);
+        }
+
+        // --- SCROLL ANIMATIONS ---
+        function handleScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('reveal');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('section').forEach(s => observer.observe(s));
+        }
+
+        async function boot() {
+            try {
+                handleScrollReveal();
+                loadReflections();
+                // ... rest of existing boot logic ...
+                const [books, cats] = await Promise.all([
+                    api.getBooks(),
+                    api.getCategories()
+                ]);
+                allBooks = books;
+                allCats = cats;
+                
+                // Populate Categories
+                catGrid.innerHTML = cats.slice(0, 8).map((c, i) => `
+                    <div class="cat-card" onclick="filterByCategory(${c.id}, '${c.name}')">
+                        <i class="fas ${ICONS[i % ICONS.length]}"></i>
+                        <span>${c.name}</span>
+                    </div>
+                `).join('');
+
+                const bestsellers = books.filter(b => b.isBestseller);
+                bestGrid.innerHTML = bestsellers.length > 0 
+                    ? bestsellers.map(b => renderBookCard(b)).join('')
+                    : '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No bestsellers featured this month.</p>';
+
+            } catch (e) { console.error(e); }
+        }
+
+        boot();function filterByCategory(catId, catName) {
+            const filtered = allBooks.filter(b => b.categoryId === catId);
+            const section = document.getElementById('categories');
+            
+            // Remove existing filtered results if any
+            const existing = document.getElementById('filteredResults');
+            if (existing) existing.remove();
+
+            const resultsDiv = document.createElement('div');
+            resultsDiv.id = 'filteredResults';
+            resultsDiv.style.marginTop = '3rem';
+            resultsDiv.innerHTML = `
+                <div class="section-header">
+                    <h2>${catName} Collection</h2>
+                    <p>${filtered.length} manuscripts found in this genre</p>
+                </div>
+                <div class="quick-grid">${filtered.map(b => renderBookCard(b)).join('')}</div>
+            `;
+            section.appendChild(resultsDiv);
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openReviewModal() { 
+            if (!session.get()) { alert("Please login to share your wisdom."); return; }
+            document.getElementById('reviewModal').style.display = 'flex'; 
+        }
+        function closeReviewModal() { document.getElementById('reviewModal').style.display = 'none'; }
+
+        document.getElementById('reflectionForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const comment = e.target.comment.value;
+            alert("Reflection submitted to the cosmic archive!");
+            closeReviewModal();
+        };
+
+        const user = session.get();
+        if (user) {
+            document.getElementById('loginBtn').innerHTML = `<i class="fas fa-user-circle"></i> ${user.name.split(' ')[0]}`;
+        }
+
+        boot();
+    </script>
+</body>
+</html>

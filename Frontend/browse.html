@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Collection | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #050816;
+            --bg-card: #0b0f22;
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+        }
+
+        body { background: var(--bg-deep); color: var(--text-main); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 8, 22, 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo { font-size: 1.6rem; font-weight: 800; color: white; text-decoration: none; }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: white; text-shadow: 0 0 10px var(--primary-glow); }
+
+        .search-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 350px;
+        }
+        .search-container input { background: none; border: none; color: white; outline: none; width: 100%; }
+
+        /* Layout */
+        .browse-wrapper { display: grid; grid-template-columns: 300px 1fr; gap: 3rem; padding: 4rem 6%; min-height: 100vh; }
+
+        /* Sidebar Filters */
+        .filters-sidebar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+        .filter-section { margin-bottom: 2.5rem; }
+        .filter-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 800; margin-bottom: 1.5rem; display: flex; justify-content: space-between; }
+        
+        .filter-chips { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+        .chip {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .chip.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+        .chip:hover:not(.active) { border-color: var(--primary); }
+
+        /* Results Area */
+        .results-header { margin-bottom: 3rem; }
+        .results-header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
+        .results-header p { color: var(--text-muted); }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* Enhanced Book Card */
+        .book-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        .book-card:hover { 
+            transform: translateY(-15px); 
+            border-color: var(--primary); 
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5); 
+        }
+
+        .card-media {
+            height: 350px;
+            background: linear-gradient(135deg, #101428 0%, #050816 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-media img {
+            height: 100%;
+            width: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: 0.5s;
+        }
+        .book-card:hover .card-media img { transform: scale(1.05) rotate(2deg); }
+
+        .card-badge {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+
+        .card-content { padding: 1.5rem; }
+        .card-cat { color: #f59e0b; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem; }
+        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .card-price { font-size: 1.2rem; font-weight: 800; color: white; }
+        
+        .add-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+        .add-btn:hover { transform: rotate(90deg) scale(1.1); }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">Lumina Books</a>
+        <ul class="nav-links">
+            <li><a href="browse.html" class="active">Browse</a></li>
+            <li><a href="bestsellers.html">Bestsellers</a></li>
+            <li><a href="new-arrivals.html">New Arrivals</a></li>
+        </ul>
+        <div style="display: flex; align-items: center; gap: 2rem;">
+            <div class="search-container">
+                <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                <input type="text" placeholder="Search archives..." id="searchInput">
+            </div>
+            <div id="navAuth"></div>
+        </div>
+    </nav>
+
+    <div class="browse-wrapper">
+        <!-- Filters -->
+        <aside class="filters-sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                <h3 style="font-weight: 800;">Filters</h3>
+                <span style="font-size: 0.8rem; color: var(--primary); cursor: pointer; font-weight: 700;" onclick="resetFilters()">Reset All</span>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Classification</span>
+                <div class="filter-chips" id="categoryFilters">
+                    <!-- Dynamic Categories -->
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Manuscript Format</span>
+                <div class="filter-chips">
+                    <div class="chip active" onclick="filterType('ALL', this)">All Types</div>
+                    <div class="chip" onclick="filterType('PRINTED', this)">Printed</div>
+                    <div class="chip" onclick="filterType('EBOOK', this)">Digital</div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="filter-title">Availability</span>
+                <div class="filter-chips">
+                    <div class="chip active" onclick="filterStock('ALL', this)">All</div>
+                    <div class="chip" onclick="filterStock('IN', this)">In Stock</div>
+                    <div class="chip" onclick="filterStock('OUT', this)">Out of Stock</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Results -->
+        <main class="results-main">
+            <header class="results-header">
+                <h1>Universal Collection</h1>
+                <p id="statsCounter">Showing all artifacts</p>
+            </header>
+
+            <div class="books-grid" id="booksGrid">
+                <!-- Books will load here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let allBooks = [];
+        let activeFilters = { category: null, type: 'ALL', stock: 'ALL', search: '' };
+
+        async function init() {
+            try {
+                const [books, cats] = await Promise.all([
+                    api.getBooks(),
+                    api.getCategories()
+                ]);
+                allBooks = books;
+                
+                // Render Categories
+                const catContainer = document.getElementById('categoryFilters');
+                catContainer.innerHTML = `<div class="chip active" onclick="filterCategory(null, this)">All Genres</div>` + 
+                    cats.map(c => `<div class="chip" onclick="filterCategory(${c.id}, this)">${c.name}</div>`).join('');
+
+                renderBooks();
+                updateAuthUI();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderBooks() {
+            const grid = document.getElementById('booksGrid');
+            const filtered = allBooks.filter(b => {
+                const matchCat = !activeFilters.category || b.categoryId === activeFilters.category;
+                const matchType = activeFilters.type === 'ALL' || b.bookType === activeFilters.type;
+                const matchStock = activeFilters.stock === 'ALL' || (activeFilters.stock === 'IN' ? b.quantity > 0 : b.quantity === 0);
+                const matchSearch = b.name.toLowerCase().includes(activeFilters.search.toLowerCase());
+                return matchCat && matchType && matchStock && matchSearch;
+            });
+
+            document.getElementById('statsCounter').innerText = `Showing ${filtered.length} artifacts found`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:5rem 0; opacity:0.5;"><i class="fas fa-search fa-3x mb-1"></i><p>No artifacts found in this quadrant.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(b => `
+                <div class="book-card" onclick="if(!event.target.closest('button')) location.href='book-detail.html?id=${b.id}'">
+                    <div class="card-media">
+                        <span class="card-badge">${b.bookType}</span>
+                        <img src="${api.getImageUrl(b.imagePath)}" onerror="this.src='https://placehold.co/200x300/1a1f2e/ffffff?text=No+Cover'">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-cat">LUMINA COLLECTION</span>
+                        <h3 class="card-title" title="${b.name}">${b.name}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.8rem;">By ${b.authorName || 'Lumina Archives'}</p>
+                        <div class="card-footer">
+                            <span class="card-price">$${b.price}</span>
+                            <button class="add-btn" onclick="addToCart(${b.id})" style="background:var(--primary); color:white; border:none; width:40px; height:40px; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.3s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(bookId) {
+            const book = allBooks.find(b => b.id === bookId);
+            if (!book) return;
+            
+            const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+            const existing = cart.find(item => item.id === bookId);
+            
+            if (existing) {
+                existing.qty = (existing.qty || 1) + 1;
+            } else {
+                cart.push({ ...book, qty: 1 });
+            }
+            
+            localStorage.setItem('lumina_cart', JSON.stringify(cart));
+            alert(`${book.name} added to your cosmic collection!`);
+            location.href = 'cart.html';
+        }
+
+        function filterCategory(id, el) {
+            updateChips(el);
+            activeFilters.category = id;
+            renderBooks();
+        }
+
+        function filterType(type, el) {
+            updateChips(el);
+            activeFilters.type = type;
+            renderBooks();
+        }
+
+        function filterStock(stock, el) {
+            updateChips(el);
+            activeFilters.stock = stock;
+            renderBooks();
+        }
+
+        function updateChips(clickedEl) {
+            const container = clickedEl.parentElement;
+            container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            clickedEl.classList.add('active');
+        }
+
+        document.getElementById('searchInput').oninput = (e) => {
+            activeFilters.search = e.target.value;
+            renderBooks();
+        };
+
+        function updateAuthUI() {
+            const authNav = document.getElementById('navAuth');
+            const user = session.get();
+            if(user) {
+                authNav.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <div style="background:var(--primary); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;">${user.name.substring(0,2).toUpperCase()}</div>
+                        <span style="font-weight:700; font-size:0.9rem;">${user.name}</span>
+                        <button onclick="session.clear(); location.reload();" class="btn btn-outline" style="padding:0.4rem 1rem; font-size:0.75rem;">Logout</button>
+                    </div>`;
+            } else {
+                authNav.innerHTML = `<button onclick="location.href='login.html'" class="btn btn-primary" style="padding:0.6rem 1.5rem; font-size:0.85rem;">Login</button>`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

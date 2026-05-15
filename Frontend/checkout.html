@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            gap: 6rem;
+            padding-top: 4rem;
+        }
+        .checkout-section { margin-bottom: 4rem; }
+        .checkout-section h2 { font-size: 2rem; margin-bottom: 2rem; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .input-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            color: white;
+            width: 100%;
+            outline: none;
+            transition: var(--transition);
+        }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .payment-opt {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .payment-opt.active { border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
+        .payment-opt i { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+        
+        .success-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-deep); display: none; align-items: center; justify-content: center;
+            z-index: 1000; text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">Lumina Books</a>
+        <div style="display: flex; align-items: center; gap: 1rem; color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;">
+            <i class="fas fa-lock"></i> Secure Checkout
+        </div>
+        <a href="cart.html" style="text-decoration: none; color: var(--text-muted); font-weight: 700;"><i class="fas fa-times"></i> Cancel</a>
+    </nav>
+
+    <div class="container">
+        <div class="checkout-layout">
+            <main>
+                <form id="checkoutForm">
+                    <section class="checkout-section">
+                        <h2>Shipping Details</h2>
+                        <div class="form-grid">
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">First Name</p>
+                                <input type="text" class="input-box" id="firstName" required>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Last Name</p>
+                                <input type="text" class="input-box" id="lastName" required>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Street Address</p>
+                                <input type="text" class="input-box" id="address" required>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">City</p>
+                                <input type="text" class="input-box" id="city" required>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Postal Code</p>
+                                <input type="text" class="input-box" id="postalCode" required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="checkout-section">
+                        <h2>Payment Method</h2>
+                        <div class="payment-methods">
+                            <div class="payment-opt active" onclick="setPayment('card')">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Visa / MC</span>
+                            </div>
+                            <div class="payment-opt" onclick="setPayment('paypal')">
+                                <i class="fab fa-paypal"></i>
+                                <span>PayPal</span>
+                            </div>
+                            <div class="payment-opt" onclick="setPayment('crypto')">
+                                <i class="fas fa-cube"></i>
+                                <span>Crypto</span>
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div style="grid-column: span 2;">
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Card Number</p>
+                                <div style="position: relative;">
+                                    <input type="text" class="input-box" placeholder="0000 0000 0000 0000" required>
+                                    <i class="fas fa-info-circle" style="position: absolute; right: 1.5rem; top: 1.2rem; color: var(--text-muted);"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Expiry Date</p>
+                                <input type="text" class="input-box" placeholder="MM / YY" required>
+                            </div>
+                            <div>
+                                <p style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">CVV</p>
+                                <input type="password" class="input-box" placeholder="•••" required>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+            </main>
+
+            <aside>
+                <div class="summary-card" style="position: sticky; top: 120px;">
+                    <h3 style="margin-bottom: 2rem;">Order Summary</h3>
+                    <div id="orderItems" style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
+                        <!-- Items injected -->
+                    </div>
+                    <div class="summary-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+                    <div class="summary-row"><span>Shipping</span><span style="color: var(--accent);">FREE</span></div>
+                    <div class="summary-row" style="margin-bottom: 2rem;"><span>Tax (8%)</span><span id="tax">$0.00</span></div>
+                    <div class="summary-row" style="border-top: 1px solid var(--border); padding-top: 2rem; margin-bottom: 3.5rem;">
+                        <span style="font-size: 1.8rem; font-weight: 800;">Total</span>
+                        <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary);" id="total">$0.00</span>
+                    </div>
+                    <button type="submit" form="checkoutForm" class="btn btn-primary" id="completeBtn" style="width: 100%; justify-content: center; padding: 1.5rem; border-radius: var(--radius-md); font-size: 1.1rem;">Complete Order <i class="fas fa-arrow-right"></i></button>
+                    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; color: var(--text-muted);">
+                        <i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div style="max-width: 500px;">
+            <i class="fas fa-check-circle" style="font-size: 6rem; color: var(--accent); margin-bottom: 2rem;"></i>
+            <h1 style="font-size: 3rem; margin-bottom: 1rem;">Order Synced</h1>
+            <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 3rem;">Your transaction has been verified across the cosmos. Your artifacts will arrive within 3-5 solar cycles.</p>
+            <a href="index.html" class="btn btn-primary">Return to Archives</a>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const user = session.get();
+        if (!user) window.location.href = 'login.html';
+
+        if (user) {
+            const names = user.name.split(' ');
+            document.getElementById('firstName').value = names[0] || '';
+            document.getElementById('lastName').value = names.slice(1).join(' ') || '';
+        }
+
+        function renderSummary() {
+            const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+            if (cart.length === 0) window.location.href = 'browse.html';
+
+            let subtotal = 0;
+            const itemsHtml = cart.map(item => {
+                const total = parseFloat(item.price) * (item.qty || 1);
+                subtotal += total;
+                const imgUrl = api.getImageUrl(item.imagePath);
+                return `
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="width: 50px; height: 70px; background: #1a1f2e; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--primary); overflow:hidden; border: 1px solid var(--border);">
+                            ${item.imagePath ? `<img src="${imgUrl}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas ${item.bookType === 'EBOOK' ? 'fa-tablet-alt' : 'fa-book'}"></i>`}
+                        </div>
+                        <div style="flex-grow: 1;">
+                            <h4 style="font-size: 0.9rem; color:white;">${item.name}</h4>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">$${item.price} x ${item.qty || 1}</p>
+                        </div>
+                        <span style="font-weight: 700; color:white;">$${total.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const tax = subtotal * 0.08;
+            const finalTotal = subtotal + tax;
+
+            document.getElementById('orderItems').innerHTML = itemsHtml;
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${finalTotal.toFixed(2)}`;
+        }
+
+        window.setPayment = (type) => {
+            document.querySelectorAll('.payment-opt').forEach(opt => opt.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        };
+
+        document.getElementById('checkoutForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('completeBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finalizing Sync...';
+            btn.disabled = true;
+
+            try {
+                console.log('Initiating sync for user:', user.id);
+                const orderData = {
+                    date: new Date().toISOString().split('T')[0],
+                    userId: user.id,
+                    statusId: 1
+                };
+
+                const res = await api.createOrder(orderData);
+                console.log('Sync result:', res);
+                
+                localStorage.removeItem('lumina_cart');
+                
+                const overlay = document.getElementById('successOverlay');
+                overlay.style.display = 'flex';
+                overlay.style.backdropFilter = 'blur(20px)';
+                
+                // Trigger celebratory animation or redirect after delay
+                setTimeout(() => {
+                    window.location.href = 'user-dashboard.html';
+                }, 4000);
+            } catch (err) {
+                console.error('Sync failed:', err);
+                alert('Order synchronization failed. Please check your celestial connection.');
+                btn.innerHTML = 'Complete Order <i class="fas fa-arrow-right"></i>';
+                btn.disabled = false;
+            }
+        };
+
+        renderSummary();
+    </script>
+</body>
+</html>

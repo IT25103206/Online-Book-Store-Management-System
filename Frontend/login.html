@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { height: 100vh; display: flex; }
+        .login-left {
+            flex: 1.2;
+            background: linear-gradient(to top, rgba(5,8,22,1), rgba(5,8,22,0.4)),
+                         url('assets/login_bg.png') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 5%;
+        }
+        .login-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5%;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 3.5rem;
+            border-radius: var(--radius-lg);
+        }
+        .form-group { margin-bottom: 2rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        .input-group {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            transition: var(--transition);
+        }
+        .input-group:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .input-group input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 1rem 0.5rem;
+            flex-grow: 1;
+            font-size: 1rem;
+        }
+        .input-group i { color: var(--text-muted); }
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-left">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">Lumina Books</h1>
+        <p style="font-size: 1.2rem; max-width: 400px;">Step into a cosmos of curated literature. Where the wisdom of the past meets the technology of the future.</p>
+    </div>
+    <div class="login-right">
+        <div class="login-card">
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Welcome back</h2>
+            <p style="margin-bottom: 3rem;">Sign in to access your digital sanctuary.</p>
+            
+            <div class="error-msg" id="errorMsg">Invalid credentials. Please try again.</div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Celestial Address (Email)</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="name@lumina.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Access Cipher (Password)</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <i class="fas fa-eye" id="togglePw" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-size: 0.9rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" style="accent-color: var(--primary);"> Remember me
+                    </label>
+                    <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 700;">Lost your path?</a>
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%; justify-content: center; padding: 1.2rem;">Illuminate Access</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 3rem; font-weight: 600;">
+                New to the library? <a href="register.html" style="color: #f59e0b; text-decoration: none;">Forge an Account</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePw').onclick = function() {
+            const pw = document.getElementById('loginPassword');
+            pw.type = pw.type === 'password' ? 'text' : 'password';
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        };
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const errEl = document.getElementById('errorMsg');
+            errEl.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            btn.disabled = true;
+
+            try {
+                const res = await api.login({
+                    gmail: document.getElementById('loginEmail').value,
+                    password: document.getElementById('loginPassword').value
+                });
+
+                if (res.ok) {
+                    const user = await res.json();
+                    session.save(user);
+                    
+                    // Role-based redirect
+                    if (user.userType === 'ADMIN' || user.isadmin === 1) {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    errEl.textContent = 'Invalid email or password. Please try again.';
+                    errEl.style.display = 'block';
+                }
+            } catch (err) {
+                errEl.textContent = 'Cannot connect to server. Is the backend running?';
+                errEl.style.display = 'block';
+            }
+            btn.innerHTML = 'Illuminate Access';
+            btn.disabled = false;
+        };
+    </script>
+</body>
+</html>

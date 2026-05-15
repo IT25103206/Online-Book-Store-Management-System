@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Detail | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .detail-layout { display: grid; grid-template-columns: 450px 1fr; gap: 5rem; margin-top: 4rem; }
+        .book-cover-lg { 
+            width: 100%; 
+            height: 600px; 
+            border-radius: var(--radius-lg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: sticky; 
+            top: 120px; 
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .review-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .review-list::-webkit-scrollbar { width: 5px; }
+        .review-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .review-list::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .tab-nav { 
+            display: flex; 
+            gap: 1rem; 
+            margin-top: 5rem;
+            margin-bottom: 3rem; 
+            background: rgba(255,255,255,0.03);
+            padding: 0.5rem;
+            border-radius: 12px;
+            width: fit-content;
+            border: 1px solid var(--border);
+        }
+        .tab-btn { 
+            padding: 0.8rem 2rem; 
+            background: transparent; 
+            border: none; 
+            color: var(--text-muted); 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-btn:hover { color: white; background: rgba(255,255,255,0.05); }
+        .tab-btn.active { 
+            color: white; 
+            background: var(--primary);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .qty-control { 
+            display: flex; 
+            align-items: center; 
+            gap: 1.5rem; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border); 
+            border-radius: 100px; 
+            padding: 0.6rem 1.2rem; 
+            width: fit-content;
+            transition: 0.3s;
+        }
+        .qty-control:focus-within { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .qty-btn { 
+            background: transparent; 
+            border: none; 
+            color: white; 
+            cursor: pointer; 
+            font-size: 1.4rem; 
+            width: 32px; 
+            height: 32px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .qty-btn:hover { background: rgba(255,255,255,0.1); color: var(--primary); }
+        .qty-btn:active { transform: scale(0.9); }
+
+        .wishlist-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .wishlist-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+        }
+        .wishlist-btn.active {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">Lumina Books</a>
+        <ul class="nav-links">
+            <li><a href="browse.html">Browse</a></li>
+            <li><a href="browse.html?cat=Bestsellers">Bestsellers</a></li>
+            <li><a href="browse.html?cat=New Arrivals">New Arrivals</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="cart.html" style="color:white; position:relative;">
+                <i class="fas fa-shopping-cart" style="font-size:1.2rem;"></i>
+                <span id="cartCount" style="position:absolute;top:-8px;right:-8px;background:var(--primary);color:white;font-size:0.6rem;font-weight:900;padding:2px 6px;border-radius:10px;display:none;"></span>
+            </a>
+            <div id="authActions" style="display: flex; gap: 1rem; align-items: center;">
+                <a href="login.html" class="btn btn-primary" id="loginBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2rem;">
+            <a href="index.html" style="color:inherit;text-decoration:none;">Home</a> /
+            <a href="browse.html" style="color:inherit;text-decoration:none;">Browse</a> /
+            <span id="breadcrumbTitle" style="color:white;">Loading...</span>
+        </div>
+
+        <div id="mainDetail">
+            <div style="display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:1rem;">
+                <div class="spinner"></div>
+                <p style="color:var(--text-muted);">Loading book details...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+    const params = new URLSearchParams(location.search);
+    const bookId = parseInt(params.get('id'));
+    const user = session.get();
+    if (user) {
+        const authActions = document.getElementById('authActions');
+        authActions.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="${(user.userType === 'ADMIN' || user.isadmin === 1) ? 'admin-dashboard.html' : 'user-dashboard.html'}" style="color: white; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 0.8rem;">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=8b5cf6&color=fff&bold=true" style="width: 32px; height: 32px; border-radius: 50%;">
+                    <span>${user.name.split(' ')[0]}</span>
+                </a>
+                <button onclick="session.clear(); location.reload();" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.7rem;">Logout</button>
+            </div>
+        `;
+    }
+    const cart = JSON.parse(localStorage.getItem('lumina_cart') || '[]');
+    if (cart.length > 0) {
+        const count = document.getElementById('cartCount');
+        count.textContent = cart.length;
+        count.style.display = 'block';
+    }
+    let qty = 1;
+
+    const BOOK_COLORS = ['linear-gradient(135deg,#1e1b4b,#312e81)','linear-gradient(135deg,#064e3b,#065f46)','linear-gradient(135deg,#1e3a5f,#1e40af)'];
+
+    async function loadBook() {
+        try {
+            const books = await api.getBooks();
+            const book = books.find(b => b.id === bookId);
+            if (!book) { document.getElementById('mainDetail').innerHTML = '<p style="color:#ef4444;text-align:center;margin-top:4rem;">Book not found.</p>'; return; }
+
+            document.getElementById('breadcrumbTitle').textContent = book.name;
+            document.title = `${book.name} | Lumina Books`;
+
+            const inStock = book.quantity > 0;
+            const type = book.bookType || 'BOOK';
+
+            const imgUrl = api.getImageUrl(book.imagePath);
+            const coverStyle = book.imagePath ? `background: url('${imgUrl}') center/cover;` : BOOK_COLORS[bookId % BOOK_COLORS.length];
+            document.getElementById('mainDetail').innerHTML = `
+            <div class="detail-layout">
+                <div>
+                    <div class="book-cover-lg" style="${coverStyle}">
+                        ${!book.imagePath ? `<i class="fas ${type==='EBOOK'?'fa-tablet-alt':'fa-book'}" style="font-size:8rem;opacity:0.5;"></i>` : ''}
+                    </div>
+                </div>
+                <div>
+                    <div style="margin-bottom:1rem;">
+                        <span style="background:rgba(139,92,246,0.2);color:var(--primary);font-size:0.75rem;font-weight:800;padding:4px 12px;border-radius:4px;text-transform:uppercase;">${type}</span>
+                        ${!inStock?'<span style="margin-left:1rem;background:rgba(239,68,68,0.2);color:#ef4444;font-size:0.75rem;font-weight:800;padding:4px 12px;border-radius:4px;">Out of Stock</span>':'<span style="margin-left:1rem;background:rgba(16,185,129,0.2);color:var(--accent);font-size:0.75rem;font-weight:800;padding:4px 12px;border-radius:4px;">In Stock (${book.quantity})</span>'}
+                    </div>
+                    <h1 style="font-size:2.8rem;line-height:1.1;margin-bottom:1rem;">${book.name}</h1>
+                    <div style="margin-bottom:1.5rem;color:var(--text-muted);">Author ID: ${book.authorId||'—'}</div>
+                    <div style="color:#f59e0b;margin-bottom:2rem;">★★★★☆ <span style="color:var(--text-muted);font-size:0.85rem;margin-left:0.5rem;">(${Math.floor(Math.random()*200)+50} reviews)</span></div>
+                    <div style="font-size:3rem;font-weight:800;color:var(--secondary);margin-bottom:2rem;">$${book.price}</div>
+                    <p style="margin-bottom:3rem;line-height:1.8;">${book.description||'A premium literary artifact from the Lumina collection. Explore the cosmos of knowledge within its pages.'}</p>
+                    <div style="display:flex;gap:2rem;align-items:center;margin-bottom:3rem;">
+                        <div class="qty-control">
+                            <button class="qty-btn" id="qtyMinus">−</button>
+                            <span id="qtyVal" style="font-weight:800;min-width:30px;text-align:center;">1</span>
+                            <button class="qty-btn" id="qtyPlus">+</button>
+                        </div>
+                        <button class="btn btn-primary" id="addCartBtn" style="padding:1rem 2.5rem;" ${!inStock?'disabled':''}><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                        <button class="wishlist-btn" id="wishlistBtn" style="font-size:1.5rem;"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div style="display:flex;gap:2rem;padding:2rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius-md);">
+                        <div style="text-align:center;"><i class="fas fa-truck" style="color:var(--accent);font-size:1.5rem;margin-bottom:0.5rem;display:block;"></i><span style="font-size:0.8rem;color:var(--text-muted);">Free Delivery</span></div>
+                        <div style="text-align:center;"><i class="fas fa-shield-alt" style="color:var(--primary);font-size:1.5rem;margin-bottom:0.5rem;display:block;"></i><span style="font-size:0.8rem;color:var(--text-muted);">Secure Checkout</span></div>
+                        ${type==='EBOOK'?'<div style="text-align:center;"><i class="fas fa-download" style="color:#f59e0b;font-size:1.5rem;margin-bottom:0.5rem;display:block;"></i><span style="font-size:0.8rem;color:var(--text-muted);">Instant Download</span></div>':''}
+                    </div>
+
+                    <div style="margin-top:5rem;">
+                        <div class="tab-nav">
+                            <button class="tab-btn active" data-tab="desc">Description</button>
+                            <button class="tab-btn" data-tab="details">Details</button>
+                            <button class="tab-btn" data-tab="reviews">Reviews</button>
+                        </div>
+                        <div id="tabContent"></div>
+                    </div>
+                </div>
+            </div>`;
+
+            // Qty controls
+            document.getElementById('qtyMinus').onclick = () => { if (qty > 1) { qty--; document.getElementById('qtyVal').textContent = qty; } };
+            document.getElementById('qtyPlus').onclick = () => { if (qty < book.quantity) { qty++; document.getElementById('qtyVal').textContent = qty; } };
+
+            // Add to cart
+            document.getElementById('addCartBtn').onclick = () => {
+                const cart = JSON.parse(localStorage.getItem('lumina_cart')||'[]');
+                const ex = cart.find(i => i.id === book.id);
+                if (ex) ex.qty = (ex.qty||1) + qty;
+                else cart.push({...book, qty});
+                localStorage.setItem('lumina_cart', JSON.stringify(cart));
+                document.getElementById('addCartBtn').innerHTML = '<i class="fas fa-check"></i> Added!';
+                document.getElementById('addCartBtn').style.background = 'var(--accent)';
+                setTimeout(() => { document.getElementById('addCartBtn').innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart'; document.getElementById('addCartBtn').style.background = ''; }, 1500);
+            };
+
+            // Tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabContent = document.getElementById('tabContent');
+            function showTab(tab) {
+                tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+                if (tab === 'desc') {
+                    tabContent.innerHTML = `<p style="line-height:1.9;color:var(--text-muted);">${book.description||'No description available for this artifact.'}</p>`;
+                } else if (tab === 'details') {
+                    tabContent.innerHTML = `<table style="width:100%;border-collapse:collapse;">${[
+                        ['ID', `#${book.id}`], ['Type', type], ['Price', `$${book.price}`], ['Stock', book.quantity], ['Author ID', `#${book.authorId||'—'}`]
+                    ].map(([k,v]) => `<tr><td style="padding:1rem;color:var(--text-muted);border-bottom:1px solid var(--border);font-weight:700;width:40%;">${k}</td><td style="padding:1rem;border-bottom:1px solid var(--border);">${v}</td></tr>`).join('')}</table>`;
+                } else if (tab === 'reviews') {
+                    tabContent.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-spin"></i> Loading archives...</div>';
+                    api.getReviewsByBook(bookId).then(reviews => {
+                        let html = '';
+                        if (user) {
+                            html += `
+                                <div style="margin-bottom:4rem; padding:2.5rem; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:var(--radius-md);">
+                                    <h3 style="margin-bottom:1.5rem; font-size:1.4rem;">Add Your Review</h3>
+                                    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; color:#f59e0b; font-size:1.8rem;" id="starRating">
+                                        ${[1,2,3,4,5].map(s=>`<i class="far fa-star" data-r="${s}" style="cursor:pointer; transition:var(--transition);"></i>`).join('')}
+                                    </div>
+                                    <textarea id="reviewComment" placeholder="Share your wisdom about this artifact..." style="width:100%; height:120px; background:rgba(0,0,0,0.2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:1rem; color:white; margin-bottom:1.5rem; outline:none; resize:none; font-size:0.95rem;"></textarea>
+                                    <button class="btn btn-primary" id="submitReview" style="padding:0.8rem 2rem;">Sync Review</button>
+                                </div>`;
+                        }
+                        if (reviews.length === 0) {
+                            html += '<div style="text-align:center; padding:4rem 0; color:var(--text-muted);"><i class="fas fa-comment-slash fa-3x" style="display:block; margin-bottom:1rem; opacity:0.2;"></i>No reviews yet. Be the first to share your journey.</div>';
+                        } else {
+                            html += `<div class="review-list">${reviews.map(r => `
+                                <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:2rem; border-radius:var(--radius-md); position:relative;">
+                                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1rem;">
+                                        <div style="display:flex; align-items:center; gap:1rem;">
+                                            <div style="width:40px; height:40px; background:var(--primary-glow); border:1px solid var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:800;">
+                                                ${r.userName ? r.userName.substring(0,1).toUpperCase() : 'U'}
+                                            </div>
+                                            <div>
+                                                <h4 style="font-size:0.9rem;">${r.userName || 'Reader'}</h4>
+                                                <p style="font-size:0.7rem; color:var(--accent);">VERIFIED_SYNC</p>
+                                            </div>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:1rem;">
+                                            <div style="color:#f59e0b; font-size:0.85rem;">
+                                                ${Array(5).fill(0).map((_,i)=>`<i class="${i<r.rating?'fas':'far'} fa-star"></i>`).join('')}
+                                            </div>
+                                            ${(user && user.id === r.userId) ? `
+                                                <div style="display:flex; gap:0.5rem;">
+                                                    <button onclick="prepareEditReview(${r.id}, ${r.rating}, '${r.comment.replace(/'/g, "\\'")}')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fas fa-edit"></i></button>
+                                                    <button onclick="handleDeleteReview(${r.id})" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    <p style="color:var(--text-muted); line-height:1.7; font-style:italic; font-size:0.95rem;">"${r.comment}"</p>
+                                </div>`).join('')}</div>`;
+                        }
+                        tabContent.innerHTML = html;
+
+                        if (user) {
+                            let selectedRating = 0;
+                            let editingReviewId = null;
+                            const stars = document.querySelectorAll('#starRating i');
+                            
+                            window.prepareEditReview = (id, rating, comment) => {
+                                editingReviewId = id;
+                                selectedRating = rating;
+                                document.getElementById('reviewComment').value = comment;
+                                document.getElementById('submitReview').innerHTML = 'Update Review';
+                                stars.forEach((s,j)=>s.className=j<rating?'fas fa-star':'far fa-star');
+                                document.querySelector('[data-tab="reviews"]').scrollIntoView({behavior:'smooth'});
+                            };
+
+                            window.handleDeleteReview = async (id) => {
+                                if(!confirm('Delete this review?')) return;
+                                try { await api.deleteReview(id); showTab('reviews'); } catch(e) { alert('Delete failed'); }
+                            };
+
+                            stars.forEach((star, i) => {
+                                star.onmouseenter = () => { if(!selectedRating) stars.forEach((s,j)=>s.className=j<=i?'fas fa-star':'far fa-star'); };
+                                star.onclick = () => { 
+                                    selectedRating = i+1; 
+                                    stars.forEach((s,j)=>s.className=j<=i?'fas fa-star':'far fa-star');
+                                    stars.forEach(s => s.style.textShadow = '0 0 15px rgba(245, 158, 11, 0.5)');
+                                };
+                            });
+                            document.getElementById('starRating').onmouseleave = () => { if(!selectedRating) stars.forEach(s=>s.className='far fa-star'); };
+
+                            document.getElementById('submitReview').onclick = async () => {
+                                if (!selectedRating) { alert('Please select a rating'); return; }
+                                const comment = document.getElementById('reviewComment').value;
+                                if (!comment.trim()) { alert('Please enter a comment'); return; }
+                                const btn = document.getElementById('submitReview');
+                                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                                try {
+                                    await api.createReview({ 
+                                        id: editingReviewId, 
+                                        rating: selectedRating, 
+                                        comment, 
+                                        userId: user.id, 
+                                        userName: user.name,
+                                        bookId 
+                                    });
+                                    showTab('reviews');
+                                } catch(e) { alert('Sync failed'); btn.disabled = false; btn.innerHTML = 'Sync Review'; }
+                            };
+                        }
+                    }).catch(() => { tabContent.innerHTML = '<p style="color:#ef4444;">Access denied to review archives.</p>'; });
+                }
+            }
+            tabs.forEach(t => { t.onclick = () => showTab(t.dataset.tab); });
+            showTab('desc');
+
+        } catch(e) {
+            document.getElementById('mainDetail').innerHTML = `<p style="color:#ef4444;text-align:center;margin-top:4rem;">Error loading book: ${e.message}</p>`;
+        }
+    }
+    if (!bookId) window.location.href = 'browse.html';
+    else loadBook();
+    </script>
+</body>
+</html>

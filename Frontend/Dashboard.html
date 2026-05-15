@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eSHELF Pro | Enterprise Intelligence Hub</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        .loader-orbit {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--primary-glow);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <div class="logo-text">
+                <h2>eSHELF <span class="text-primary">PRO</span></h2>
+                <p>CORP_CORE_v3.0</p>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" data-view="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Intelligence Hub</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="inventory">
+                    <i class="fas fa-boxes-stacked"></i>
+                    <span>Asset Inventory</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="authors">
+                    <i class="fas fa-user-gear"></i>
+                    <span>Creator Lattice</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="users">
+                    <i class="fas fa-users-viewfinder"></i>
+                    <span>Verified Entities</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="orders">
+                    <i class="fas fa-receipt"></i>
+                    <span>Operational Flux</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="reviews">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Public Sentiment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" data-view="admin">
+                    <i class="fas fa-vault"></i>
+                    <span>Security Core</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="nav-link" style="opacity: 0.5; cursor: default; font-size: 0.85rem;">
+                <i class="fas fa-circle-check" class="text-accent"></i>
+                <span>SYNC_STATE_OPTIMIZED</span>
+            </div>
+            <a href="index.html" class="nav-link" style="color: #ef4444; background: rgba(239, 68, 68, 0.05);">
+                <i class="fas fa-power-off"></i>
+                <span>TERMINATE_SESSION</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="search-bar">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" id="globalSearch" placeholder="Global system search (Ctrl + K)">
+            </div>
+            <div class="header-actions">
+                <div class="icon-btn">
+                    <i class="far fa-bell"></i>
+                    <span class="badge">12</span>
+                </div>
+                <div class="icon-btn" id="themeToggle">
+                    <i class="fas fa-circle-half-stroke"></i>
+                </div>
+                <div class="profile-container" style="display: flex; align-items: center; gap: 1rem; padding-left: 2rem; border-left: 1px solid var(--border);">
+                    <div style="text-align: right; line-height: 1.3;">
+                        <div style="font-weight: 800; font-size: 1rem; color: var(--text-main);">Chathura Deshan</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">SYSTEM_OVERSEER</div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Chathura+Deshan&background=6366f1&color=fff&bold=true&size=128" alt="Profile" class="profile-img">
+                </div>
+            </div>
+        </header>
+
+        <main class="content" id="mainContent">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60vh;">
+                <div class="loader-orbit"></div>
+                <p style="margin-top: 2rem; color: var(--text-muted); font-weight: 800; letter-spacing: 2px; font-size: 0.9rem;">INITIALIZING_LATTICE_SYNC...</p>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

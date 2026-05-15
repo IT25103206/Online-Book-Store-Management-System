@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Core | Lumina Books</title>
+    <link rel="stylesheet" href="css/lumina.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        body { display: flex; }
+        .admin-sidebar {
+            width: 280px; height: 100vh; background: var(--bg-card);
+            border-right: 1px solid var(--border); position: fixed;
+            padding: 2.5rem 1.5rem; display: flex; flex-direction: column;
+        }
+        .admin-main { margin-left: 280px; flex-grow: 1; min-height: 100vh; }
+        .admin-nav { list-style: none; margin-top: 3rem; flex-grow: 1; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem 1.5rem; color: var(--text-muted); text-decoration: none;
+            font-weight: 600; border-radius: var(--radius-sm); transition: var(--transition);
+        }
+        .admin-nav a:hover, .admin-nav a.active { background: rgba(139,92,246,0.1); color: var(--primary); }
+        .admin-header {
+            height: 80px; padding: 0 3rem; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid var(--border);
+            background: rgba(5,8,22,0.5); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .admin-content { padding: 3rem; }
+        .lumina-table { width: 100%; border-collapse: collapse; }
+        .lumina-table th {
+            text-align: left; padding: 1.2rem 1.5rem; background: rgba(255,255,255,0.03);
+            color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .lumina-table td { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); }
+        .lumina-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .badge { padding: 4px 12px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .badge-primary { background: rgba(139,92,246,0.2); color: var(--primary); }
+        .badge-accent { background: rgba(16,185,129,0.2); color: var(--accent); }
+        .badge-warn { background: rgba(245,158,11,0.2); color: #f59e0b; }
+        .badge-danger { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .stat-badge {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 1.5rem 2rem;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
+        .stat-val { font-size: 1.8rem; font-weight: 800; display: block; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .modal-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 500;
+        }
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 2.5rem 3rem; 
+            width: 850px; max-width: 95vw;
+            max-height: 85vh; overflow-y: auto;
+            position: relative;
+        }
+        .modal-box::-webkit-scrollbar { width: 6px; }
+        .modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .modal-box h3 { margin-bottom: 2rem; font-size: 1.5rem; }
+        .m-input {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 0.8rem 1rem; color: white;
+            margin-bottom: 1.2rem; outline: none; font-size: 0.95rem;
+        }
+        .m-input:focus { border-color: var(--primary); }
+        .m-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        .m-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .action-btn {
+            background: none; border: none; cursor: pointer; padding: 0.5rem;
+            color: var(--text-muted); transition: var(--transition); font-size: 1rem;
+        }
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.del:hover { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <aside class="admin-sidebar">
+        <a href="index.html" class="nav-logo" style="text-decoration:none; color: white;">Lumina Books</a>
+        <p style="font-size: 0.7rem; color: var(--primary); font-weight: 800; letter-spacing: 2px; margin-top: 0.5rem;">ADMIN CORE</p>
+        <ul class="admin-nav">
+            <li><a href="#" class="active" data-view="dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="#" data-view="books"><i class="fas fa-book"></i> Books</a></li>
+            <li><a href="#" data-view="authors"><i class="fas fa-pen-fancy"></i> Authors</a></li>
+            <li><a href="#" data-view="users"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="#" data-view="categories"><i class="fas fa-tags"></i> Categories</a></li>
+            <li><a href="#" data-view="orders"><i class="fas fa-receipt"></i> Orders</a></li>
+            <li><a href="#" data-view="reviews"><i class="fas fa-star"></i> Reviews</a></li>
+        </ul>
+        <div style="border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <p id="adminName" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem;"></p>
+            <a href="#" id="logoutBtn" style="color: #ef4444; text-decoration: none; font-weight: 700; font-size: 0.9rem;">
+                <i class="fas fa-power-off"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h2 id="viewTitle">Dashboard</h2>
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="search-mini"><i class="fas fa-search"></i><input type="text" placeholder="Search..." id="globalSearch"></div>
+            </div>
+        </header>
+        <div class="admin-content" id="adminContent"></div>
+    </main>
+
+    <div class="modal-bg" id="modalBg">
+        <div class="modal-box" id="modalBox"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+    const content = document.getElementById('adminContent');
+    const navLinks = document.querySelectorAll('.admin-nav a');
+    const viewTitle = document.getElementById('viewTitle');
+    const modalBg = document.getElementById('modalBg');
+    const modalBox = document.getElementById('modalBox');
+
+    // Auth guard
+    const user = session.get();
+    if (!user || (user.userType !== 'ADMIN' && user.isadmin !== 1)) {
+        window.location.href = 'login.html';
+    }
+    document.getElementById('adminName').textContent = user ? user.name : '';
+    document.getElementById('logoutBtn').onclick = (e) => { e.preventDefault(); session.clear(); window.location.href = 'login.html'; };
+
+    function openModal(html) { modalBox.innerHTML = html; modalBg.style.display = 'flex'; }
+    function closeModal() { modalBg.style.display = 'none'; }
+    
+    function showOrderModal(order) {
+        openModal(`
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Sync Artifact <span class="accent-text">#ORD-${String(order.id).padStart(4,'0')}</span></h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Updating celestial transaction parameters...</p>
+            </div>
+            <form id="orderForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <input type="hidden" name="id" value="${order.id}">
+                <input type="hidden" name="userId" value="${order.userId}">
+                <div class="m-group">
+                    <label class="m-label" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7;">Archive Date</label>
+                    <input type="date" class="m-input" name="date" value="${order.date}" required style="background: rgba(255,255,255,0.03); border-color: rgba(139, 92, 246, 0.2);">
+                </div>
+                <div class="m-group">
+                    <label class="m-label" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7;">Celestial Status</label>
+                    <select class="m-input" name="statusId" required style="background: rgba(255,255,255,0.03); border-color: rgba(139, 92, 246, 0.2); height: 50px;">
+                        <option value="1" ${order.statusId===1?'selected':''}>PENDING (In Orbit)</option>
+                        <option value="2" ${order.statusId===2?'selected':''}>COMPLETE (Artifact Delivered)</option>
+                        <option value="3" ${order.statusId===3?'selected':''}>CANCELLED (Mission Aborted)</option>
+                    </select>
+                </div>
+                <div style="margin-top:2.5rem; display:flex; gap:1.2rem;">
+                    <button type="submit" class="btn btn-primary" id="orderUpdateBtn" style="flex:2; padding: 1.2rem; border-radius: 12px; box-shadow: 0 4px 20px var(--primary-glow);">
+                        <i class="fas fa-sync-alt" style="margin-right: 10px;"></i> Update Sync
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()" style="flex:1; border-radius: 12px; border-color: rgba(255,255,255,0.1); color: var(--text-muted);">Discard</button>
+                </div>
+            </form>
+        `);
+        document.getElementById('orderForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('orderUpdateBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Harmonizing...';
+            btn.disabled = true;
+
+            try {
+                const d = Object.fromEntries(new FormData(e.target));
+                d.statusId = parseInt(d.statusId);
+                d.userId = parseInt(d.userId);
+                d.id = parseInt(d.id);
+                await api.updateOrder(d);
+                closeModal();
+                views.orders();
+            } catch (err) {
+                console.error(err);
+                alert("Synchronization failed. Check celestial connection.");
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        };
+    }
+
+    modalBg.onclick = (e) => { if (e.target === modalBg) closeModal(); };
+
+    // Nav
+    navLinks.forEach(link => {
+        link.onclick = (e) => {
+            e.preventDefault();
+            const view = link.dataset.view;
+            if (!views[view]) return;
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            viewTitle.textContent = link.textContent.trim();
+            views[view]();
+        };
+    });
+
+    const views = {
+        dashboard: async () => {
+            try {
+                const [books, orders, users, authors] = await Promise.all([
+                    api.getBooks(), api.getOrders(), api.getUsers(), api.getAuthors()
+                ]);
+                content.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem;">
+                        <div class="stat-badge"><i class="fas fa-book" style="font-size:1.5rem; color: var(--primary);"></i><div><span class="stat-val">${books.length}</span><span class="stat-label">Books</span></div></div>
+                        <div class="stat-badge"><i class="fas fa-receipt" style="font-size:1.5rem; color: var(--secondary);"></i><div><span class="stat-val">${orders.length}</span><span class="stat-label">Orders</span></div></div>
+                        <div class="stat-badge"><i class="fas fa-users" style="font-size:1.5rem; color: var(--accent);"></i><div><span class="stat-val">${users.length}</span><span class="stat-label">Users</span></div></div>
+                        <div class="stat-badge"><i class="fas fa-pen-fancy" style="font-size:1.5rem; color: #f59e0b;"></i><div><span class="stat-val">${authors.length}</span><span class="stat-label">Authors</span></div></div>
+                    </div>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem;">
+                        <h3 style="margin-bottom: 1.5rem;">Recent Books</h3>
+                        <table class="lumina-table"><thead><tr><th>Name</th><th>Type</th><th>Price</th><th>Stock</th></tr></thead>
+                        <tbody>${books.slice(-5).reverse().map(b => `<tr><td style="font-weight:700;">${b.name}</td><td><span class="badge badge-primary">${b.bookType||'BOOK'}</span></td><td>$${b.price}</td><td>${b.quantity}</td></tr>`).join('')}</tbody></table>
+                    </div>`;
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error loading dashboard: ${e.message}</p>`; }
+        },
+
+        books: async () => {
+            try {
+                const [books, authors, categories] = await Promise.all([api.getBooks(), api.getAuthors(), api.getCategories()]);
+                content.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <p style="color:var(--text-muted);">${books.length} artifacts in collection</p>
+                        <button class="btn btn-primary" id="addBookBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;"><i class="fas fa-plus"></i> Add Book</button>
+                    </div>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>Artifact</th><th>Type</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+                    <tbody>${books.map(b => {
+                        const cat = categories.find(c => c.id === b.categoryId)?.name || 'General';
+                        const thumb = b.imagePath ? `<img src="${b.imagePath}" style="width:40px; height:54px; object-fit:cover; border-radius:4px; border:1px solid var(--border);">` : `<div style="width:40px; height:54px; background:rgba(255,255,255,0.05); border-radius:4px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-book" style="font-size:0.8rem; opacity:0.3;"></i></div>`;
+                        return `<tr>
+                        <td><div style="display:flex;align-items:center;gap:1.5rem;">${thumb}<div><div style="font-weight:700;">${b.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">#${b.id}</div></div></div></td>
+                        <td><span class="badge ${b.bookType==='EBOOK'?'badge-primary':'badge-warn'}">${b.bookType||'BOOK'}</span></td>
+                        <td style="font-size:0.85rem; color:var(--text-muted);">${cat}</td>
+                        <td style="font-weight:700;">$${b.price}</td>
+                        <td><div style="display:flex;align-items:center;gap:0.8rem;"><div style="width:80px;height:6px;background:rgba(255,255,255,0.05);border-radius:10px;overflow:hidden;"><div style="width:${Math.min(b.quantity,100)}%;height:100%;background:${b.quantity>=20?'var(--accent)':'#ef4444'};"></div></div><span style="font-size:0.8rem;font-weight:800;">${b.quantity}</span></div></td>
+                        <td>
+                            <button class="action-btn" onclick="viewBookDetails(${b.id})" title="View"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn" onclick="editBook(${b.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn del" onclick="deleteBook(${b.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`}).join('')}</tbody></table></div>`;
+                document.getElementById('addBookBtn').onclick = () => showBookModal(null, authors, categories);
+                window.viewBookDetails = (id) => { const book = books.find(b=>b.id===id); showViewModal(book); };
+                window.editBook = async (id) => { const book = books.find(b=>b.id===id); showBookModal(book, authors, categories); };
+                window.deleteBook = async (id) => { if(confirm('Delete this book?')) { await api.deleteBook(id); views.books(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        },
+
+        authors: async () => {
+            try {
+                const authors = await api.getAuthors();
+                content.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <p style="color:var(--text-muted);">${authors.length} authors registered</p>
+                        <button class="btn btn-primary" id="addAuthorBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;"><i class="fas fa-plus"></i> Add Author</button>
+                    </div>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>Author</th><th>Type</th><th>Description</th><th>Actions</th></tr></thead>
+                    <tbody>${authors.map(a => `<tr>
+                        <td style="font-weight:700;">${a.name}</td>
+                        <td><span class="badge badge-warn">${a.authorType||'AUTHOR'}</span></td>
+                        <td style="color:var(--text-muted); max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${a.discription||'—'}</td>
+                        <td>
+                            <button class="action-btn" onclick="editAuthor(${a.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn del" onclick="deleteAuthor(${a.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                document.getElementById('addAuthorBtn').onclick = () => showAuthorModal();
+                window.editAuthor = (id) => { const author = authors.find(a=>a.id===id); showAuthorModal(author); };
+                window.deleteAuthor = async (id) => { if(confirm('Delete this author?')) { await api.deleteAuthor(id); views.authors(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        },
+
+        users: async () => {
+            try {
+                const users = await api.getUsers();
+                content.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <p style="color:var(--text-muted);">${users.length} entities registered</p>
+                        <button class="btn btn-primary" id="addUserBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;"><i class="fas fa-plus"></i> Add User</button>
+                    </div>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Age</th><th>Actions</th></tr></thead>
+                    <tbody>${users.map(u => `<tr>
+                        <td><div style="display:flex;align-items:center;gap:1rem;"><img src="https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=8b5cf6&color=fff&bold=true&size=80" style="width:36px;height:36px;border-radius:50%;"><span style="font-weight:700;">${u.name}</span></div></td>
+                        <td style="color:var(--text-muted); font-size:0.9rem;">${u.gmail}</td>
+                        <td><span class="badge ${u.userType==='ADMIN'?'badge-danger':'badge-accent'}">${u.userType||'USER'}</span></td>
+                        <td>${u.age||'—'}</td>
+                        <td>
+                            <button class="action-btn" onclick="editUser(${u.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn del" onclick="deleteUser(${u.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                document.getElementById('addUserBtn').onclick = () => showUserModal();
+                window.editUser = (id) => { const user = users.find(u=>u.id===id); showUserModal(user); };
+                window.deleteUser = async (id) => { if(confirm('Delete this user?')) { await api.deleteUser(id); views.users(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        },
+
+        categories: async () => {
+            try {
+                const categories = await api.getCategories();
+                content.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <p style="color:var(--text-muted);">${categories.length} categories defined</p>
+                        <button class="btn btn-primary" id="addCatBtn" style="padding:0.6rem 1.5rem; font-size:0.85rem;"><i class="fas fa-plus"></i> Add Category</button>
+                    </div>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>ID</th><th>Category Name</th><th>Actions</th></tr></thead>
+                    <tbody>${categories.map(c => `<tr>
+                        <td style="font-weight:800; color:var(--primary);">#CAT-${c.id}</td>
+                        <td style="font-weight:700;">${c.name}</td>
+                        <td>
+                            <button class="action-btn" onclick="editCategory(${c.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn del" onclick="deleteCategory(${c.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                document.getElementById('addCatBtn').onclick = () => showCategoryModal();
+                window.editCategory = (id) => { const cat = categories.find(c=>c.id===id); showCategoryModal(cat); };
+                window.deleteCategory = async (id) => { if(confirm('Delete this category?')) { await api.deleteCategory(id); views.categories(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        },
+
+        orders: async () => {
+            try {
+                const orders = await api.getOrders();
+                content.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                        <p style="color:var(--text-muted);">${orders.length} celestial transactions synced</p>
+                        <button class="btn btn-outline" onclick="views.orders()" style="padding:0.5rem 1.2rem; font-size:0.75rem;"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>Order ID</th><th>Date</th><th>User</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>${orders.length === 0 ? '<tr><td colspan="5" style="text-align:center; padding:3rem; color:var(--text-muted);">No orders found in the archives.</td></tr>' : orders.map(o => `<tr>
+                        <td style="font-weight:800; color:var(--primary);">#ORD-${String(o.id).padStart(4,'0')}</td>
+                        <td>${o.date||'—'}</td>
+                        <td style="font-size:0.9rem;">User ID: ${o.userId||'—'}</td>
+                        <td><span class="badge ${o.statusId===2?'badge-accent':(o.statusId===3?'badge-danger':'badge-warn')}" style="cursor:pointer;" onclick="editOrder(${o.id})">${o.statusId===2?'COMPLETE':(o.statusId===3?'CANCELLED':'PENDING')}</span></td>
+                        <td>
+                            <button class="action-btn" onclick="editOrder(${o.id})" title="Edit Status"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn del" onclick="deleteOrder(${o.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                window.editOrder = (id) => { const order = orders.find(o=>o.id===id); showOrderModal(order); };
+                window.deleteOrder = async (id) => { if(confirm('Delete this order?')) { await api.deleteOrder(id); views.orders(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        },
+
+        reviews: async () => {
+            try {
+                const reviews = await api.getReviews();
+                content.innerHTML = `
+                    <p style="color:var(--text-muted); margin-bottom:2rem;">${reviews.length} reviews submitted</p>
+                    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+                    <table class="lumina-table"><thead><tr><th>ID</th><th>Rating</th><th>Comment</th><th>Actions</th></tr></thead>
+                    <tbody>${reviews.map(r => `<tr>
+                        <td style="font-weight:700;">#${r.id}</td>
+                        <td><div style="color:#f59e0b;">${Array(5).fill(0).map((_,i)=>`<i class="${i<r.rating?'fas':'far'} fa-star"></i>`).join('')}</div></td>
+                        <td style="font-style:italic; max-width:400px;">"${r.comment||'—'}"</td>
+                        <td><button class="action-btn del" onclick="deleteReview(${r.id})"><i class="fas fa-trash"></i></button></td>
+                    </tr>`).join('')}</tbody></table></div>`;
+                window.deleteReview = async (id) => { if(confirm('Delete?')) { await api.deleteReview(id); views.reviews(); } };
+            } catch(e) { content.innerHTML = `<p style="color:#ef4444;">Error: ${e.message}</p>`; }
+        }
+    };
+
+    // ── MODALS ──
+    function showBookModal(book, authors, categories) {
+        openModal(`
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; position:sticky; top:-2.5rem; background:var(--bg-card); z-index:10; padding:1rem 0; border-bottom:1px solid var(--border);">
+                <h3 style="margin:0;">${book ? 'Edit Book Artifact' : 'Add New Manuscript'}</h3>
+                <button type="button" class="action-btn" onclick="closeModal()" style="font-size:1.5rem;">&times;</button>
+            </div>
+            <form id="bookForm">
+                <input type="hidden" name="id" value="${book?.id||''}">
+                
+                <div style="display: grid; grid-template-columns: 280px 1fr; gap: 3rem;">
+                    <!-- Left: Media Column -->
+                    <div>
+                        <label class="m-label">Book Cover Preview</label>
+                        <div id="imagePreview" style="width: 100%; aspect-ratio: 3/4; background: rgba(255,255,255,0.02); border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 1.5rem;">
+                            ${book?.imagePath ? `<img src="${api.getImageUrl(book.imagePath)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x400?text=No+Preview';">` : '<i class="fas fa-cloud-upload-alt fa-3x" style="opacity: 0.1;"></i>'}
+                        </div>
+                        
+                        <label class="m-label">Cover Source (URL / Link)</label>
+                        <input class="m-input" id="mImagePath" name="imagePath" value="${book?.imagePath||''}" placeholder="Paste image URL here..." style="margin-bottom:1rem;">
+                        
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; position: relative; text-align:center;">
+                            <input type="file" id="bookFile" accept="image/*" style="position:absolute; width:100%; height:100%; top:0; left:0; opacity:0; cursor:pointer;">
+                            <p style="font-size:0.75rem; font-weight:700; color:var(--primary);"><i class="fas fa-upload"></i> Or Upload Locally</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Attributes Column -->
+                    <div>
+                        <label class="m-label">Title / Name</label>
+                        <input class="m-input" name="name" value="${book?.name||''}" placeholder="e.g. The Quantum Codex" required>
+                        
+                        <div class="m-row">
+                            <div>
+                                <label class="m-label">Manuscript Format</label>
+                                <select class="m-input" name="bookType">
+                                    <option value="BOOK" ${book?.bookType==='BOOK'?'selected':''}>Physical Tome</option>
+                                    <option value="EBOOK" ${book?.bookType==='EBOOK'?'selected':''}>Digital Sync</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="m-label">Classification</label>
+                                <select class="m-input" name="categoryId" required>
+                                    <option value="">Select Genre</option>
+                                    ${(categories||[]).map(c=>`<option value="${c.id}" ${book?.categoryId===c.id?'selected':''}>${c.name}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="m-row">
+                            <div>
+                                <label class="m-label">Value ($)</label>
+                                <input class="m-input" name="price" value="${book?.price||''}" placeholder="29.99" required>
+                            </div>
+                            <div>
+                                <label class="m-label">Archive Stock</label>
+                                <input class="m-input" type="number" name="quantity" value="${book?.quantity||0}" required>
+                            </div>
+                        </div>
+                        
+                        <label class="m-label">Origin Author</label>
+                        <select class="m-input" name="authorId" required>
+                            <option value="">Choose Author</option>
+                            ${(authors||[]).map(a=>`<option value="${a.id}" ${book?.authorId===a.id?'selected':''}>${a.name}</option>`).join('')}
+                        </select>
+
+                        <label class="m-label">Chronicle / Description</label>
+                        <textarea class="m-input" name="description" rows="5" style="resize:none; margin-bottom:1.5rem;" placeholder="A brief summary of the wisdom contained within...">${book?.description||''}</textarea>
+                        
+                        <label class="m-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="mIsBestseller" ${book?.isBestseller?'checked':''} style="width:18px; height:18px; accent-color:var(--primary);">
+                            <span>Mark as Monthly Bestseller</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:1.5rem; margin-top:3rem; position:sticky; bottom:-2.5rem; background:var(--bg-card); padding:1.5rem 0; border-top:1px solid var(--border); z-index:10;">
+                    <button type="submit" class="btn btn-primary" style="flex:2; height:50px; font-size:1rem;" id="saveBookBtn">
+                        <i class="fas fa-save"></i> ${book?'Commit Changes':'Sync to Archives'}
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()" style="flex:1; height:50px;">Abort</button>
+                </div>
+            </form>`);
+
+        const urlInput = document.getElementById('mImagePath');
+        urlInput.oninput = (e) => {
+            const val = e.target.value;
+            if (val) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${api.getImageUrl(val)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x400?text=Invalid+URL';">`;
+            }
+        };
+
+        const fileInput = document.getElementById('bookFile');
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const preview = document.getElementById('imagePreview');
+            const original = preview.innerHTML;
+            preview.innerHTML = '<div style="text-align:center;"><i class="fas fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i><p style="font-size:0.7rem;margin-top:0.5rem;">Uploading...</p></div>';
+            
+            try {
+                const path = await api.uploadImage(file);
+                document.getElementById('mImagePath').value = path;
+                preview.innerHTML = `<img src="${path}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } catch (err) { 
+                alert('Upload failure: ' + err.message); 
+                preview.innerHTML = original;
+            }
+        };
+
+        document.getElementById('bookForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveBookBtn');
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Syncing...';
+            
+            const d = Object.fromEntries(new FormData(e.target));
+            // Explicitly ensure imagePath is captured from the input
+            d.imagePath = document.getElementById('mImagePath').value;
+            d.quantity = parseInt(d.quantity);
+            d.authorId = parseInt(d.authorId);
+            d.categoryId = parseInt(d.categoryId);
+            d.isBestseller = document.getElementById('mIsBestseller').checked;
+            
+            try {
+                if (d.id) { d.id = parseInt(d.id); await api.updateBook(d); }
+                else { delete d.id; await api.createBook(d); }
+                closeModal(); views.books();
+            } catch(err) {
+                alert('Persistence failed: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        };
+    }
+
+    function showViewModal(item) {
+        openModal(`
+            <h3>View Details</h3>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                <div style="aspect-ratio: 2/3; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    ${item.imagePath ? `<img src="${item.imagePath}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas ${item.bookType==='EBOOK'?'fa-tablet-alt':'fa-book'} fa-4x" style="opacity:0.2;"></i>`}
+                </div>
+                <div>
+                    <h2 style="margin-bottom: 0.5rem;">${item.name}</h2>
+                    <p style="color: var(--primary); font-weight: 800; margin-bottom: 1.5rem;">${item.bookType || 'BOOK'}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                        <div><p class="m-label">Price</p><p style="font-size: 1.2rem; font-weight: 800;">$${item.price}</p></div>
+                        <div><p class="m-label">Stock</p><p style="font-size: 1.2rem; font-weight: 800;">${item.quantity}</p></div>
+                    </div>
+                    <p class="m-label">Description</p>
+                    <p style="line-height: 1.6; color: var(--text-muted);">${item.description || 'No description available.'}</p>
+                </div>
+            </div>
+            <div style="margin-top: 3rem; text-align: right;">
+                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        `);
+    }
+
+    function showAuthorModal(author) {
+        openModal(`
+            <h3>${author ? 'Edit Author' : 'Add Author'}</h3>
+            <form id="authorForm">
+                <input type="hidden" name="id" value="${author?.id||''}">
+                <label class="m-label">Name</label><input class="m-input" name="name" value="${author?.name||''}" required>
+                <label class="m-label">Description</label><textarea class="m-input" name="discription" rows="3">${author?.discription||''}</textarea>
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">${author?'Update':'Create'}</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>`);
+        document.getElementById('authorForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const d = Object.fromEntries(new FormData(e.target));
+            if (d.id) { d.id = parseInt(d.id); await api.updateAuthor(d); }
+            else { delete d.id; await api.createAuthor(d); }
+            closeModal(); views.authors();
+        };
+    }
+
+    function showUserModal(u) {
+        openModal(`
+            <h3>${u ? 'Edit User' : 'Add User'}</h3>
+            <form id="userForm">
+                <input type="hidden" name="id" value="${u?.id||''}">
+                <label class="m-label">Name</label><input class="m-input" name="name" value="${u?.name||''}" required>
+                <label class="m-label">Email</label><input class="m-input" type="email" name="gmail" value="${u?.gmail||''}" required>
+                <div class="m-row">
+                    <div><label class="m-label">Password</label><input class="m-input" type="password" name="password" placeholder="${u?'Leave blank to keep':'••••••••'}" ${u?'':'required'}></div>
+                    <div><label class="m-label">Age</label><input class="m-input" type="number" name="age" value="${u?.age||''}" required></div>
+                </div>
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">${u?'Update':'Create'}</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>`);
+        document.getElementById('userForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const d = Object.fromEntries(new FormData(e.target));
+            d.age = parseInt(d.age);
+            if (d.id) { 
+                d.id = parseInt(d.id); 
+                if (!d.password) delete d.password; // Don't update password if blank
+                await api.updateUser(d); 
+            }
+            else { delete d.id; await api.createUser(d); }
+            closeModal(); views.users();
+        };
+    }
+
+    function showCategoryModal(cat) {
+        openModal(`
+            <h3>${cat ? 'Edit Category' : 'Add Category'}</h3>
+            <form id="catForm">
+                <input type="hidden" name="id" value="${cat?.id||''}">
+                <label class="m-label">Category Name</label><input class="m-input" name="name" value="${cat?.name||''}" required>
+                <div style="display:flex; gap:1rem; margin-top:2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">${cat?'Update':'Create'}</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>`);
+        document.getElementById('catForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const d = Object.fromEntries(new FormData(e.target));
+            if (d.id) { d.id = parseInt(d.id); await api.updateCategory(d); }
+            else { delete d.id; await api.createCategory(d); }
+            closeModal(); views.categories();
+        };
+    }
+
+    // Boot
+    views.dashboard();
+    </script>
+</body>
+</html>
