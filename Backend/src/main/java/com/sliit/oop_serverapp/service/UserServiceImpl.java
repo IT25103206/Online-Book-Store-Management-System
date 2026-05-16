@@ -78,11 +78,7 @@ public class UserServiceImpl implements UserService {
     private void updateEntityFromDTO(User user, UserDTO dto) {
         user.setName(dto.getName());
         user.setGmail(dto.getGmail());
-
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()){
-            user.setPassword(dto.getPassword());
-        }
-
+        user.setPassword(dto.getPassword());
         user.setAge(dto.getAge());
         user.setIsadmin(dto.getIsadmin());
     }
