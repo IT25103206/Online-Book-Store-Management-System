@@ -40,6 +40,28 @@ public class BookController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Upload failed on server: " + e.toString());
         }
+        
     }
+    @GetMapping
+    public List<BookDTO> getAll() {
+        return bookService.getAllBooks();
+    }
+
+    @PostMapping("/Add")
+    public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
+        return ResponseEntity.ok(bookService.createBook(bookDTO));
+    }
+
+    @PutMapping("/Update")
+    public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
+        return ResponseEntity.ok(bookService.updateBook(bookDTO));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Integer id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.ok("Book Deleted Successfully");
+    }
+    
 
 }
