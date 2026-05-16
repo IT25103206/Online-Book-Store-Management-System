@@ -64,22 +64,5 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setGmail(user.getGmail());
-        dto.setAge(user.getAge());
-        dto.setIsadmin(user.getIsadmin());
-        dto.setUserType(user instanceof Admin ? "ADMIN" : "USER");
-        return dto;
-    }
-
-    private void updateEntityFromDTO(User user, UserDTO dto) {
-        user.setName(dto.getName());
-        user.setGmail(dto.getGmail());
-        user.setPassword(dto.getPassword());
-        user.setAge(dto.getAge());
-        user.setIsadmin(dto.getIsadmin());
-    }
+    
 }
