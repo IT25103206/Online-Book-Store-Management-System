@@ -24,20 +24,6 @@ public class StatusController {
         this.statusRepository = statusRepository;
     }
 
-    // Get All Status
-    @GetMapping
-    public List<Status> getAll(){
-        return statusRepository.findAll();
-    }
-
-    // Create Status
-    @PostMapping("/Add")
-    public ResponseEntity<String> createStatus(@RequestBody Status status){
-        statusRepository.save(status);
-
-        return ResponseEntity.ok("Status Created Successfully");
-    }
-
     // Delete Status
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String>deleteStatus(@PathVariable int id){
