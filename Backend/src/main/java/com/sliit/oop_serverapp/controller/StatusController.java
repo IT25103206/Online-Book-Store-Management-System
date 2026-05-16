@@ -38,22 +38,6 @@ public class StatusController {
         return ResponseEntity.ok("Status Created Successfully");
     }
 
-    // Update Status - Pending/ Delivered
-    @PutMapping("/Update")
-    public String updateStatus (@RequestBody Status request){
-
-        if (statusRepository.existsById(request.getId())){
-
-            Status status = statusRepository.findById(request.getId()).get();
-
-            status.setName(request.getName());
-            statusRepository.save(status);
-
-            return "Status Updated Sucessfully";
-        }
-        return "Status ID Not Found";
-    }
-
     // Delete Status
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String>deleteStatus(@PathVariable int id){
