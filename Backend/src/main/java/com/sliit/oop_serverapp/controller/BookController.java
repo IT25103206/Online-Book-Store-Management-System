@@ -10,10 +10,7 @@ import java.nio.file.*;
 import java.util.List;
 
 
-@RestController
-@RequestMapping("/Books")
-@CrossOrigin
-public class BookController {
+
 
     @Autowired
     private BookService bookService;
