@@ -31,9 +31,6 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(orderDTO));
     }
 
-    @PutMapping("/Update")
-    public ResponseEntity<OrderDTO> updateOrder(@RequestBody OrderDTO orderDTO) {
-        return ResponseEntity.ok(orderService.updateOrder(orderDTO));
     }
 
     @DeleteMapping("/delete/{id}")
