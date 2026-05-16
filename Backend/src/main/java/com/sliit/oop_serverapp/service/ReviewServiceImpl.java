@@ -74,18 +74,5 @@ public class ReviewServiceImpl implements ReviewService {
         return dto;
     }
 
-    private void updateEntityFromDTO(Review review, ReviewDTO dto) {
-        review.setRating(dto.getRating());
-        review.setComment(dto.getComment());
-        if (dto.getUserId() != null) {
-            User user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
-            review.setUser(user);
-        }
-        if (dto.getBookId() != null) {
-            Book book = bookRepository.findById(dto.getBookId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + dto.getBookId()));
-            review.setBook(book);
-        }
-    }
+
 }
