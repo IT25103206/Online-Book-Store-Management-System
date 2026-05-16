@@ -15,13 +15,35 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/Status")
-public class StatusController {
 
-    @Autowired
-    private final StatusRepository statusRepository;
+    // Get All Status
+    @GetMapping
+    public List<Status> getAll(){
+        return statusRepository.findAll();
+    }
 
-    public StatusController(StatusRepository statusRepository) {
-        this.statusRepository = statusRepository;
+    // Create Status
+    @PostMapping("/Add")
+    public ResponseEntity<String> createStatus(@RequestBody Status status){
+        statusRepository.save(status);
+
+        return ResponseEntity.ok("Status Created Successfully");
+    }
+
+    // Update Status - Pending/ Delivered
+    @PutMapping("/Update")
+    public String updateStatus (@RequestBody Status request){
+
+        if (statusRepository.existsById(request.getId())){
+
+            Status status = statusRepository.findById(request.getId()).get();
+
+            status.setName(request.getName());
+            statusRepository.save(status);
+
+            return "Status Updated Sucessfully";
+        }
+        return "Status ID Not Found";
     }
 
     // Delete Status
