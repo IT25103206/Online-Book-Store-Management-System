@@ -29,6 +29,42 @@ public class CategoryController {
         return categories;
     }
 
-   
+    // Add New Category
+    @PostMapping("/Add")
+    public ResponseEntity<String> createCategory(@RequestBody Category request){
+        Category category = new Category();
+
+        category.setName(request.getName());
+        categoryRepository.save(category);
+
+        return ResponseEntity.ok("Category Created Successfully");
+    }
+
+    // Update Category * WHY WE NEED TO UPDATE A CATEGORY
+    @PutMapping(path = "/Update")
+    public String updateCategory(@RequestBody Category request){
+        if(categoryRepository.existsById(request.getId())){
+
+            Category category = categoryRepository.findById(request.getId()).get();
+
+            category.setName(request.getName());
+            categoryRepository.save(category);
+
+            return "Category Updated Successfully";
+        }
+        return "Category ID not Found";
+    }
+
+    // Delete Category
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteID(@PathVariable int id){
+        if(categoryRepository.existsById(id)) {
+
+            categoryRepository.deleteById(id);
+
+            return ResponseEntity.ok("Category Deleted Successfully");
+        }
+        return ResponseEntity.badRequest().body("Category ID Not Found");
+    }
 
 }
