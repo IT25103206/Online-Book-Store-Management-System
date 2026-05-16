@@ -21,4 +21,24 @@ public class AuthorController {
     @Autowired
     private AuthorService authorService;
     
+    @GetMapping
+    public List<AuthorDTO> getAll() {
+        return authorService.getAllAuthors();
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody AuthorDTO authorDTO) {
+        return ResponseEntity.ok(authorService.createAuthor(authorDTO));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<AuthorDTO> updateAuthor(@RequestBody AuthorDTO authorDTO) {
+        return ResponseEntity.ok(authorService.updateAuthor(authorDTO));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteAuthor(@PathVariable Integer id) {
+        authorService.deleteAuthor(id);
+        return ResponseEntity.ok("Author Deleted Successfully");
+    }
 }
