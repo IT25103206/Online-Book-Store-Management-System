@@ -20,5 +20,25 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-    
+
+    @GetMapping
+    public List<OrderDTO> getAll() {
+        return orderService.getAllOrders();
+    }
+
+    @PostMapping("/Add")
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
+        return ResponseEntity.ok(orderService.createOrder(orderDTO));
+    }
+
+    @PutMapping("/Update")
+    public ResponseEntity<OrderDTO> updateOrder(@RequestBody OrderDTO orderDTO) {
+        return ResponseEntity.ok(orderService.updateOrder(orderDTO));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok("Order Deleted Successfully");
+    }
 }
