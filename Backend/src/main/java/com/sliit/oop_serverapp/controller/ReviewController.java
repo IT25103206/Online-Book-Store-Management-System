@@ -30,20 +30,5 @@ public class ReviewController {
     public List<ReviewDTO> getByBook(@PathVariable Integer bookId) {
         return reviewService.getReviewsByBookId(bookId);
     }
-
-    @PostMapping("/Add")
-    public ResponseEntity<ReviewDTO> addReview(@RequestBody ReviewDTO reviewDTO) {
-        return ResponseEntity.ok(reviewService.createReview(reviewDTO));
-    }
-
-    @PutMapping("/Update")
-    public ResponseEntity<ReviewDTO> updateReview(@RequestBody ReviewDTO reviewDTO) {
-        return ResponseEntity.ok(reviewService.updateReview(reviewDTO));
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteReview(@PathVariable Integer id) {
-        reviewService.deleteReview(id);
-        return ResponseEntity.ok("Review Deleted Successfully");
-    }
+    
 }
