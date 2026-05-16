@@ -18,9 +18,6 @@ import java.util.List;
 @CrossOrigin
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
-
     @GetMapping
     public List<OrderDTO> getAll() {
         return orderService.getAllOrders();
