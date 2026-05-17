@@ -27,7 +27,11 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
-
+    @PostMapping("/Add")
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
+        return ResponseEntity.ok(orderService.createOrder(orderDTO));
+    }
+    
     @PutMapping("/Update")
     public ResponseEntity<OrderDTO> updateOrder(@RequestBody OrderDTO orderDTO) {
         return ResponseEntity.ok(orderService.updateOrder(orderDTO));
