@@ -9,17 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.*;
 import java.util.List;
 
-/**
- * OOP Concept: Encapsulation
- * The Controller encapsulates the request handling logic and acts as an entry point 
- * to the system, delegating business operations to the Service layer.
- */
 @RestController
 @RequestMapping("/Books")
 @CrossOrigin
 public class BookController {
-
-    @Autowired
+     @Autowired
     private BookService bookService;
 
     @PostMapping("/Upload")
@@ -44,8 +38,8 @@ public class BookController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Upload failed on server: " + e.toString());
         }
+        
     }
-
     @GetMapping
     public List<BookDTO> getAll() {
         return bookService.getAllBooks();
@@ -60,10 +54,23 @@ public class BookController {
     public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
         return ResponseEntity.ok(bookService.updateBook(bookDTO));
     }
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Integer id) {
         bookService.deleteBook(id);
         return ResponseEntity.ok("Book Deleted Successfully");
     }
+    
+
 }
+
+
+   
+    
+
+
+
+
+
+
+
+   
