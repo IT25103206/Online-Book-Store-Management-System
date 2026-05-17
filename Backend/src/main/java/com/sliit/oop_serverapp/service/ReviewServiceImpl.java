@@ -56,13 +56,6 @@ public class ReviewServiceImpl implements ReviewService {
         return convertToDTO(reviewRepository.save(review));
     }
 
-    @Override
-    public void deleteReview(Integer id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Review not found with id: " + id);
-        }
-        reviewRepository.deleteById(id);
-    }
 
     private ReviewDTO convertToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
