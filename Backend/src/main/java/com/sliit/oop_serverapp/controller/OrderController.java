@@ -18,6 +18,7 @@ import java.util.List;
 @CrossOrigin
 public class OrderController {
 
+    // Dependency Injection: Spring automatically injects the OrderService implementation
     @Autowired
     private OrderService orderService;
 
