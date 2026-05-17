@@ -9,10 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.*;
 import java.util.List;
 
-
-
-
-    @Autowired
+@RestController
+@RequestMapping("/Books")
+@CrossOrigin
+public class BookController {
+     @Autowired
     private BookService bookService;
 
     @PostMapping("/Upload")
@@ -67,3 +68,9 @@ import java.util.List;
     
 
 
+
+
+
+
+
+   
