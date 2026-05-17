@@ -15,7 +15,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/Status")
+public class StatusController{
 
+    @Autowired
+    private StatusRepository statusRepository;
+    
     // Get All Status
     @GetMapping
     public List<Status> getAll(){
