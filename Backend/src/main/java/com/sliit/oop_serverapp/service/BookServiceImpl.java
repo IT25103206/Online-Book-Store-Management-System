@@ -69,5 +69,67 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
+    private BookDTO convertToDTO(Book book) {
+        BookDTO dto = new BookDTO();
+        dto.setId(book.getId());
+        dto.setName(book.getName());
+        dto.setDescription(book.getDescription());
+        dto.setPrice(book.getPrice());
+        dto.setQuantity(book.getQuantity());
+        // OOP Concept: Polymorphism
+        // The DTO is populated based on the specific type of Book entity (EBook or PrintedBook)
+        if (book.getAuthor() != null) {
+            dto.setAuthorId(book.getAuthor().getId());
+            dto.setAuthorName(book.getAuthor().getName());
+        }
+        if (book.getCategory() != null) {
+            dto.setCategoryId(book.getCategory().getId());
+        }
+        dto.setImagePath(book.getImagePath());
+        dto.setIsBestseller(book.getIsBestseller());
+        
+        if (book instanceof EBook) {
+            dto.setBookType("EBOOK");
+            dto.setDownloadUrl(((EBook) book).getDownloadUrl());
+            dto.setFileSizeMb(((EBook) book).getFileSizeMb());
+        } else if (book instanceof PrintedBook) {
+            dto.setBookType("PRINTED");
+            dto.setWeight(((PrintedBook) book).getWeight());
+            dto.setDimensions(((PrintedBook) book).getDimensions());
+        } else {
+            dto.setBookType("BOOK");
+        }
+        return dto;
+    }
+
+    private void updateEntityFromDTO(Book book, BookDTO dto) {
+        book.setName(dto.getName());
+        book.setDescription(dto.getDescription());
+        book.setPrice(dto.getPrice());
+        book.setQuantity(dto.getQuantity());
+        book.setImagePath(dto.getImagePath());
+        book.setIsBestseller(dto.getIsBestseller() != null ? dto.getIsBestseller() : false);
+        
+        if (dto.getAuthorId() != null) {
+            Author author = authorRepository.findById(dto.getAuthorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + dto.getAuthorId()));
+            book.setAuthor(author);
+        }
+
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + dto.getCategoryId()));
+            book.setCategory(category);
+        }
+
+        if (book instanceof EBook && dto.getDownloadUrl() != null) {
+            ((EBook) book).setDownloadUrl(dto.getDownloadUrl());
+            ((EBook) book).setFileSizeMb(dto.getFileSizeMb());
+        } else if (book instanceof PrintedBook && dto.getWeight() != null) {
+            ((PrintedBook) book).setWeight(dto.getWeight());
+            ((PrintedBook) book).setDimensions(dto.getDimensions());
+        }
+    }
+
     
 }
