@@ -18,18 +18,11 @@ import java.util.List;
 @CrossOrigin
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
-
     @GetMapping
     public List<OrderDTO> getAll() {
         return orderService.getAllOrders();
     }
 
-    @PostMapping("/Add")
-    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
-        return ResponseEntity.ok(orderService.createOrder(orderDTO));
-    }
 
     @PutMapping("/Update")
     public ResponseEntity<OrderDTO> updateOrder(@RequestBody OrderDTO orderDTO) {
