@@ -40,6 +40,18 @@ public class CategoryController {
         return ResponseEntity.ok("Category Created Successfully");
     }
 
+    // Delete Category
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteID(@PathVariable int id){
+        if(categoryRepository.existsById(id)) {
+
+            categoryRepository.deleteById(id);
+
+            return ResponseEntity.ok("Category Deleted Successfully");
+        }
+        return ResponseEntity.badRequest().body("Category ID Not Found");
+    }
+
     // Update Category * WHY WE NEED TO UPDATE A CATEGORY
     @PutMapping(path = "/Update")
     public String updateCategory(@RequestBody Category request){
@@ -54,17 +66,4 @@ public class CategoryController {
         }
         return "Category ID not Found";
     }
-
-    // Delete Category
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteID(@PathVariable int id){
-        if(categoryRepository.existsById(id)) {
-
-            categoryRepository.deleteById(id);
-
-            return ResponseEntity.ok("Category Deleted Successfully");
-        }
-        return ResponseEntity.badRequest().body("Category ID Not Found");
-    }
-
 }
