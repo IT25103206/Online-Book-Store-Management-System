@@ -14,15 +14,6 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "category")
-public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
-    @Size(max = 45)
-    @Column(name = "name", length = 45)
-    private String name;
 
 
 }
