@@ -58,7 +58,7 @@ public class StatusController{
 
             statusRepository.deleteById(id);
 
-            return ResponseEntity.ok("Status Deleted Sucessfully");
+            return ResponseEntity.ok("Status Deleted Successfully");
         }
         return ResponseEntity.badRequest().body("Status ID Not Found");
     }
