@@ -14,11 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * OOP Concept: Abstraction & Polymorphism
- * ReviewServiceImpl implements ReviewService, managing the lifecycle 
- * of user feedback and interactions with the archive.
- */
+
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
