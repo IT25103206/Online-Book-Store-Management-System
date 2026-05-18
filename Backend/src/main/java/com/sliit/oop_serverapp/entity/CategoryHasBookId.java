@@ -10,9 +10,13 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Getter
+
 @Setter
+
 @EqualsAndHashCode
+
 @Embeddable
+
 public class CategoryHasBookId implements Serializable {
     private static final long serialVersionUID = 4735200853095314828L;
     @NotNull
