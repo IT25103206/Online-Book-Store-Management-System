@@ -50,18 +50,7 @@ public class StatusController{
         return "Status ID Not Found";
     }
 
-    // Delete Status
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<String>deleteStatus(@PathVariable int id){
 
-        if(statusRepository.existsById(id)){
-
-            statusRepository.deleteById(id);
-
-            return ResponseEntity.ok("Status Deleted Successfully");
-        }
-        return ResponseEntity.badRequest().body("Status ID Not Found");
-    }
 }
 
 
