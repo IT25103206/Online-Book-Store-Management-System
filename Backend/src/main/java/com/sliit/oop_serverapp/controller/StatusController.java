@@ -15,7 +15,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/Status")
+public class StatusController{
 
+    @Autowired
+    private StatusRepository statusRepository;
+    
     // Get All Status
     @GetMapping
     public List<Status> getAll(){
@@ -46,18 +50,7 @@ import java.util.List;
         return "Status ID Not Found";
     }
 
-    // Delete Status
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<String>deleteStatus(@PathVariable int id){
 
-        if(statusRepository.existsById(id)){
-
-            statusRepository.deleteById(id);
-
-            return ResponseEntity.ok("Status Deleted Sucessfully");
-        }
-        return ResponseEntity.badRequest().body("Status ID Not Found");
-    }
 }
 
 
