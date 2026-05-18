@@ -4,31 +4,6 @@ import jakarta.persistence.*; // JPA annotations for ORM mapping
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * CategoryHasBook Entity Class
- * -----------------------------
- * This class represents the relationship between Category and Book entities.
- * It is used as a junction/bridge table for handling the many-to-many
- * relationship between categories and books.
- *
- * Database Table:
- * - category_has_book
- *
- * OOP Concepts Used:
- * 1. Encapsulation
- *    - Fields are kept private.
- *    - Access is provided through getters and setters.
- *
- * 2. Association
- *    - This class creates an association between Category and Book entities.
- *
- * 3. Composition of Keys
- *    - Uses a composite primary key through EmbeddedId.
- *
- * Technologies Used:
- * - JPA/Hibernate for ORM mapping
- * - Lombok for automatic getter/setter generation
- */
 
 @Getter // Lombok automatically generates getter methods
 @Setter // Lombok automatically generates setter methods
