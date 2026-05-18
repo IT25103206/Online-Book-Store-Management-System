@@ -14,6 +14,3 @@ public class UserDTO {
     private String userType;
 
 }
-
-//OOP Concept: Encapsulation (Data Transfer Object)
-//UserDTO encapsulates user profile and session data.
