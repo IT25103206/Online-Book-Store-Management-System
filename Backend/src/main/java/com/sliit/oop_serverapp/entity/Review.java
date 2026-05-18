@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Encapsulation & Data Modeling
- * Review entity represents a user's feedback for a book.
- * Private fields and Lombok accessors demonstrate encapsulation.
- */
+
 @Getter
 @Setter
 @Entity

@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * OOP Concept: Encapsulation & Abstraction
- * ReviewController manages user feedback.
- * It encapsulates review processing logic via the ReviewService.
- */
+
 @RestController
 @RequestMapping("/Reviews")
 @CrossOrigin
