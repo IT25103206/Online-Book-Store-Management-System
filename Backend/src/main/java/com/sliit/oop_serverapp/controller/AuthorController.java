@@ -18,7 +18,9 @@ import java.util.List;
 @CrossOrigin
 public class AuthorController {
 
-    
+    @Autowired
+    private AuthorService authorService;
+
     @GetMapping
     public List<AuthorDTO> getAll() {
         return authorService.getAllAuthors();
