@@ -1,5 +1,4 @@
-
-        package com.sliit.oop_serverapp.entity;
+package com.sliit.oop_serverapp.entity;
 
 import jakarta.persistence.Column; // Maps fields to database columns
 import jakarta.persistence.Embeddable; // Marks class as embeddable
