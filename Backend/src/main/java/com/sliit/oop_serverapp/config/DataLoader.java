@@ -18,7 +18,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Create Statuses
+
         if (statusRepository.count() == 0) {
             com.sliit.oop_serverapp.entity.Status pending = new com.sliit.oop_serverapp.entity.Status();
             pending.setName("Pending");
@@ -34,7 +34,6 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Order Statuses seeded: Pending, Complete, Cancelled");
         }
 
-        // Create Default Admin if not exists
         if (userRepository.findByGmail("admin@lumina.com") == null) {
             Admin admin = new Admin();
             admin.setName("Lumina Administrator");
@@ -46,7 +45,6 @@ public class DataLoader implements CommandLineRunner {
             System.out.println("Default Admin created: admin@lumina.com / admin123");
         }
 
-        // Create Default User if not exists
         if (userRepository.findByGmail("user@lumina.com") == null) {
             User user = new User();
             user.setName("Orion Vance");

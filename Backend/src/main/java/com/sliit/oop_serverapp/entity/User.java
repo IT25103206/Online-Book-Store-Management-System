@@ -5,11 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Encapsulation & Inheritance
- * User entity represents a registered actor in the system.
- * It serves as a base class for users with different roles.
- */
 @Getter
 @Setter
 @Entity
@@ -17,6 +12,7 @@ import lombok.Setter;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("USER")
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

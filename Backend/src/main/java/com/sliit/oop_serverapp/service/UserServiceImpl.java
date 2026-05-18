@@ -9,13 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 
-/**
- * OOP Concept: Abstraction & Polymorphism
- * UserServiceImpl implements UserService, handling authentication 
- * and user profile operations with specialized implementation logic.
- */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -24,58 +20,81 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         User user;
+
         if ("ADMIN".equalsIgnoreCase(userDTO.getUserType())) {
             user = new Admin();
         } else {
             user = new User();
         }
+
         updateEntityFromDTO(user, userDTO);
+
         return convertToDTO(userRepository.save(user));
     }
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
+
         User user = userRepository.findById(userDTO.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userDTO.getId()));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id: " + userDTO.getId()
+                        ));
+
         updateEntityFromDTO(user, userDTO);
+
         return convertToDTO(userRepository.save(user));
     }
 
     @Override
     public void deleteUser(Integer id) {
+
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
+            throw new ResourceNotFoundException(
+                    "User not found with id: " + id
+            );
         }
         userRepository.deleteById(id);
     }
 
     @Override
     public UserDTO login(UserDTO loginDTO) {
+
         User user = userRepository.findByGmail(loginDTO.getGmail());
-        if (user != null && user.authenticate(loginDTO.getPassword())) {
+
+        if (user != null &&
+                user.authenticate(loginDTO.getPassword())) {
             return convertToDTO(user);
         }
         return null;
     }
 
     private UserDTO convertToDTO(User user) {
+
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setGmail(user.getGmail());
         dto.setAge(user.getAge());
         dto.setIsadmin(user.getIsadmin());
+
         dto.setUserType(user instanceof Admin ? "ADMIN" : "USER");
+
         return dto;
     }
 
     private void updateEntityFromDTO(User user, UserDTO dto) {
+
         user.setName(dto.getName());
         user.setGmail(dto.getGmail());
         user.setPassword(dto.getPassword());

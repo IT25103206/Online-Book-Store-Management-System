@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/User")
+
 @CrossOrigin
 public class UserController {
 
@@ -46,5 +48,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("User Deleted Successfully");
     }
-
 }

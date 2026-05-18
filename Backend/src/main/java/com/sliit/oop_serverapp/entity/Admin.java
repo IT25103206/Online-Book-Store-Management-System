@@ -5,17 +5,12 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Inheritance & Implementation
- * Admin extends the User class, inheriting its base attributes.
- * It also implements AdminActions, demonstrating behavioral abstraction.
- */
 @Getter
 @Setter
 @Entity
 @DiscriminatorValue("ADMIN")
 public class Admin extends User implements AdminActions {
-    // Admin specific fields can be added here
+
     private String adminPrivileges;
 
     @Override
