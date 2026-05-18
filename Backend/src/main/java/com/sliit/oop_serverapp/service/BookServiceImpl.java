@@ -16,15 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * OOP Concept: Abstraction & Implementation
- * BookServiceImpl implements the BookService interface, hiding the complex business logic 
- * from the controller and providing a clear implementation of required methods.
- */
+
 @Service
 public class BookServiceImpl implements BookService {
 
-    // OOP Concept: Dependency Injection (a form of Inversion of Control)
+    
     @Autowired
     private BookRepository bookRepository;
 
@@ -76,8 +72,7 @@ public class BookServiceImpl implements BookService {
         dto.setDescription(book.getDescription());
         dto.setPrice(book.getPrice());
         dto.setQuantity(book.getQuantity());
-        // OOP Concept: Polymorphism
-        // The DTO is populated based on the specific type of Book entity (EBook or PrintedBook)
+        
         if (book.getAuthor() != null) {
             dto.setAuthorId(book.getAuthor().getId());
             dto.setAuthorName(book.getAuthor().getName());
