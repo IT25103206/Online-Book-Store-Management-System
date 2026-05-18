@@ -5,11 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Inheritance (Subclass)
- * PrintedBook extends the Book class, inheriting its common properties 
- * and adding physical-specific attributes like weight and dimensions.
- */
+
 @Getter
 @Setter
 @Entity

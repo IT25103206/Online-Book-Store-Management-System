@@ -5,11 +5,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Inheritance (Subclass)
- * EBook extends the Book class, inheriting its common properties 
- * and adding digital-specific attributes like downloadUrl.
- */
+
 @Getter
 @Setter
 @Entity
