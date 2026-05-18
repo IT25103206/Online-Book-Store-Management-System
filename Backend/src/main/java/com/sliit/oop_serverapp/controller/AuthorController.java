@@ -18,7 +18,9 @@ import java.util.List;
 @CrossOrigin
 public class AuthorController {
 
-    
+    @Autowired
+    private AuthorService authorService;
+
     @GetMapping
     public List<AuthorDTO> getAll() {
         return authorService.getAllAuthors();
@@ -26,7 +28,7 @@ public class AuthorController {
 
     @PostMapping("/add")
     public ResponseEntity<AuthorDTO> createAuthor(@RequestBody AuthorDTO authorDTO) {
-        return ResponseEntity.ok(authorService.createAuthor(authorDTO));
+        
     }
 
     @PutMapping("/update")
