@@ -60,37 +60,37 @@ public class BookController {
    
     
     }
+    // Handles GET requests to fetch all books
     @GetMapping
     public List<BookDTO> getAll() {
+        // Calls the service layer to return all book details
         return bookService.getAllBooks();
     }
 
+    // Handles POST requests to add a new book
     @PostMapping("/Add")
     public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
+        // Sends book data to the service layer and returns the created book
         return ResponseEntity.ok(bookService.createBook(bookDTO));
     }
 
+    // Handles PUT requests to update an existing book
     @PutMapping("/Update")
     public ResponseEntity<BookDTO> updateBook(@RequestBody BookDTO bookDTO) {
+        // Sends updated book data to the service layer and returns the updated book
         return ResponseEntity.ok(bookService.updateBook(bookDTO));
     }
+
+    // Handles DELETE requests to remove a book using its ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Integer id) {
+        // Calls the service layer to delete the selected book
         bookService.deleteBook(id);
+
+        // Returns success message after deleting the book
         return ResponseEntity.ok("Book Deleted Successfully");
     }
     
 
 }
-
-
-   
     
-
-
-
-
-
-
-
-   
