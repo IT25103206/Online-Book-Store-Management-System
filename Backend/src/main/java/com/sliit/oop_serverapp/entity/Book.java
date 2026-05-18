@@ -6,11 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * OOP Concept: Inheritance (Super Class)
- * The Book class serves as the base class for different types of books.
- * It uses a SINGLE_TABLE inheritance strategy to store all book types in one table.
- */
+
 @Getter
 @Setter
 @Entity
