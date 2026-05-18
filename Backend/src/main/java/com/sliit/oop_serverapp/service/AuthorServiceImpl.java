@@ -27,7 +27,16 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-   
+    @Override
+    public AuthorDTO createAuthor(AuthorDTO authorDTO) {
+        if ("GUEST".equalsIgnoreCase(authorDTO.getAuthorType())) {
+            author = new GuestAuthor();
+        } else {
+            author = new Author();
+        }
+        updateEntityFromDTO(author, authorDTO);
+        return convertToDTO(authorRepository.save(author));
+    }
 
     @Override
     public AuthorDTO updateAuthor(AuthorDTO authorDTO) {
@@ -47,9 +56,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     private AuthorDTO convertToDTO(Author author) {
         AuthorDTO dto = new AuthorDTO();
-        dto.setId(author.getId());
-        dto.setName(author.getName());
-        dto.setDiscription(author.getDiscription());
+       
         
         if (author instanceof GuestAuthor) {
             dto.setAuthorType("GUEST");
