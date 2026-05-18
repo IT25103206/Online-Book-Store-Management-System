@@ -1,4 +1,5 @@
-package com.sliit.oop_serverapp.entity;
+
+        package com.sliit.oop_serverapp.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -14,7 +15,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Embeddable
 public class CategoryHasBookId implements Serializable {
+
     private static final long serialVersionUID = 4735200853095314828L;
+
     @NotNull
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
@@ -23,5 +26,5 @@ public class CategoryHasBookId implements Serializable {
     @Column(name = "book_id", nullable = false)
     private Integer bookId;
 
-
 }
+
