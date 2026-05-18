@@ -28,7 +28,7 @@ public class AuthorController {
 
     @PostMapping("/add")
     public ResponseEntity<AuthorDTO> createAuthor(@RequestBody AuthorDTO authorDTO) {
-        
+        return ResponseEntity.ok(authorService.createAuthor(authorDTO));
     }
 
     @PutMapping("/update")
