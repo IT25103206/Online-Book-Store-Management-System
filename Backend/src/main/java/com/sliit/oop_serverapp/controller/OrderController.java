@@ -14,25 +14,24 @@ import java.util.List;
  * It abstracts the complex order processing by delegating tasks to the OrderService.
  */
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/Order")
 @CrossOrigin
 public class OrderController {
 
-    // Dependency Injection: Spring automatically injects the OrderService implementation
     @Autowired
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAll() {
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public List<OrderDTO> getAll() {
+        return orderService.getAllOrders();
     }
 
-    @PostMapping("/add")
+    @PostMapping("/Add")
     public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderDTO orderDTO) {
         return ResponseEntity.ok(orderService.createOrder(orderDTO));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/Update")
     public ResponseEntity<OrderDTO> updateOrder(@RequestBody OrderDTO orderDTO) {
         return ResponseEntity.ok(orderService.updateOrder(orderDTO));
     }
