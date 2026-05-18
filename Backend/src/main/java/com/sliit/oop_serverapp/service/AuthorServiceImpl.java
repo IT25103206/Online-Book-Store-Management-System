@@ -29,7 +29,6 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public AuthorDTO createAuthor(AuthorDTO authorDTO) {
-        Author author;
         if ("GUEST".equalsIgnoreCase(authorDTO.getAuthorType())) {
             author = new GuestAuthor();
         } else {
@@ -57,9 +56,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     private AuthorDTO convertToDTO(Author author) {
         AuthorDTO dto = new AuthorDTO();
-        dto.setId(author.getId());
-        dto.setName(author.getName());
-        dto.setDiscription(author.getDiscription());
+       
         
         if (author instanceof GuestAuthor) {
             dto.setAuthorType("GUEST");

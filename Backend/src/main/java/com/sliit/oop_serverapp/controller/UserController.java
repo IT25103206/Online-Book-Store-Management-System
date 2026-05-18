@@ -8,11 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * OOP Concept: Encapsulation & Abstraction
- * UserController encapsulates user and authentication operations.
- * It abstracts security and profile logic via the UserService.
- */
 @RestController
 @RequestMapping("/User")
 @CrossOrigin
@@ -24,6 +19,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO loginDTO) {
         UserDTO user = userService.login(loginDTO);
+
         if (user != null) {
             return ResponseEntity.ok(user);
         }
@@ -50,4 +46,5 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("User Deleted Successfully");
     }
+
 }

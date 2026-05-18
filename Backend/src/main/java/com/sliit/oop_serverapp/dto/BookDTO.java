@@ -2,10 +2,7 @@ package com.sliit.oop_serverapp.dto;
 
 import lombok.Data;
 
-/**
- * OOP Concept: Encapsulation (Data Transfer Object)
- * BookDTO bundles all book-related metadata for secure transfer.
- */
+
 @Data
 public class BookDTO {
     private Integer id;
